@@ -284,8 +284,8 @@ if ($streak >= 3) {
     
     <!-- Navbar -->
     
-    <header id="navbar" class="sticky transition shadow-md bg-white dark:bg-darkslate duration-150 top-0 w-full z-20">
-        <nav class="flex justify-between lg:container lg: mx-auto transition px-4 lg:px-6 py-3" x-data="{isOpen : false, current: 1}" @click.away="isOpen = false" x-init="if(window.innerWidth >= 1024) {isOpen = true}">
+    <header id="navbar" class="sticky shadow-md bg-white dark:bg-darkslate  top-0 w-full z-20">
+        <nav class="flex justify-between lg:container lg: mx-auto px-4 lg:px-6 py-3" x-data="{isOpen : false, current: 1}" @click.away="isOpen = false" x-init="if(window.innerWidth >= 1024) {isOpen = true}">
         <a href="index.php" class="text-2xl font-bold text-coral">
                 <img src="assets/isoLogo.svg" class="size-12" alt="logo">
                 
@@ -300,7 +300,7 @@ if ($streak >= 3) {
                 </button>
             </div>
                 <!-- Mobile -->
-                <ul id="mobile" class="absolute shadow-md mt-[70px] transition-all text-almostblack dark:text-lightgray bg-white dark:bg-darkslate pb-8 flex-col items-end flex w-full lg:static top-0 right-0 p-4 lg:text-lg float-right gap-4 lg:p-0 lg:justify-end lg:items-center lg:flex-row lg:shadow-none lg:mt-0 text-xl font-semibold" x-show="isOpen" x-cloak x-transition:enter="transition ease-out duration-200"
+                <ul id="mobile" class="absolute shadow-md mt-[70px] text-almostblack dark:text-lightgray bg-white dark:bg-darkslate pb-8 flex-col items-end flex w-full lg:static top-0 right-0 p-4 lg:text-lg float-right gap-4 lg:p-0 lg:justify-end lg:items-center lg:flex-row lg:shadow-none lg:mt-0 text-xl font-semibold" x-show="isOpen" x-cloak x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0  translate-x-12"
                         x-transition:enter-end="opacity-100 scale-100"
                         x-transition:leave="transition ease-in duration-75"
