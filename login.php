@@ -58,9 +58,10 @@
                         <input type="password" name="password"  id="password" class="mt-1 p-2 w-full border rounded-md focus-visible:outline-coral" required>
                     </div>
 
+                    <!-- Remember Me -->
                     <div class="flex items-center gap-1">
-                        <input type="checkbox" name="remember_me" id="remember_me">
-                        <label for="remember_me" class="select-none text-sm font-medium text-gray-700">Remember Me</label>
+                        <input type="checkbox" name="remember_me" id="remember_me" class="accent-coral">
+                        <label for="remember_me" class=" select-none text-sm font-medium text-gray-700">Remember Me</label>
                     </div>
     
 

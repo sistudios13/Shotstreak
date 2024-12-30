@@ -102,7 +102,7 @@ if (isset($_SESSION['loggedin'])) {
               <div class="space-y-4 flex flex-col ">
                 <a href="#faq"><button class="mt-6 bg-coral text-white md:hover:bg-coralhov text-lg px-6 py-3 rounded-full md:hover:scale-110  transition-all">See our FAQ</button></a>
                 <?php if ($logged): ?>
-                  <a href="index.php" class="text-coral text-sm font-semibold">Back to Home</a>
+                  <a href="index.php" class="text-coral text-sm font-semibold">Back to Dashboard</a>
                 <?php endif; ?>
               </div>
             </div>
@@ -218,7 +218,7 @@ if (isset($_SESSION['loggedin'])) {
         <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="footer-links flex flex-col justify-center items-center">
             <?php if ($logged): ?>
-              <a href="index.php" class="block text-center">Home</a>
+              <a href="index.php" class="block text-center">Dashboard</a>
             <?php else: ?>
               <a href="index.php" class="block mb-2 text-center">Home</a>
               <a href="register.php" class="block mb-2 text-center">Register</a>

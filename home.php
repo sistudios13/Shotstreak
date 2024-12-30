@@ -283,14 +283,11 @@ if ($streak >= 3) {
 <body class="bg-lightgray dark:bg-almostblack min-h-screen" >
     
     <!-- Navbar -->
-    
     <header id="navbar" class="sticky shadow-md bg-white dark:bg-darkslate  top-0 w-full z-20">
-        <nav class="flex justify-between lg:container lg: mx-auto px-4 lg:px-6 py-3" x-data="{isOpen : false, current: 1}" @click.away="isOpen = false" x-init="if(window.innerWidth >= 1024) {isOpen = true}">
-        <a href="index.php" class="text-2xl font-bold text-coral">
-                <img src="assets/isoLogo.svg" class="size-12" alt="logo">
-                
+        <nav class="flex justify-between lg:container mx-auto px-4 lg:px-6 py-3 lg:py-0 " x-data="{isOpen : false, current: 1}" @click.outside="() => { if(window.innerWidth < 1024) {isOpen = false} }" x-init="if(window.innerWidth >= 1024) {isOpen = true}">
+            <a href="index.php" class="text-2xl font-semibold text-coral">
+                <img src="assets/isoLogo.svg" class="size-12 lg:size-14 lg:my-2" alt="Shotstreak">
             </a>
-
             <!-- Menu Button -->
             <div id="bars" class="flex items-center lg:hidden">
                 <button @click="isOpen = !isOpen" class="flex flex-col gap-1 items-center px-3 pr-0 py-2 text-gray-500 border-0 rounded">
@@ -299,22 +296,17 @@ if ($streak >= 3) {
                     <div id="bar1" class="w-5 rounded h-0.5 bg-almostblack dark:bg-lightgray transition-all" x-bind:class="{ 'rotate-45 -translate-y-1.5 bg-coral dark:bg-coral': isOpen }"></div>
                 </button>
             </div>
-                <!-- Mobile -->
-                <ul id="mobile" class="absolute shadow-md mt-[70px] text-almostblack dark:text-lightgray bg-white dark:bg-darkslate pb-8 flex-col items-end flex w-full lg:static top-0 right-0 p-4 lg:text-lg float-right gap-4 lg:p-0 lg:justify-end lg:items-center lg:flex-row lg:shadow-none lg:mt-0 text-xl font-semibold" x-show="isOpen" x-cloak x-transition:enter="transition ease-out duration-200"
-                        x-transition:enter-start="opacity-0  translate-x-12"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-75"
-                        x-transition:leave-start="opacity-100 scale-100"
-                        x-transition:leave-end="opacity-0 translate-x-4">
-                    <li><a href="index.php" class="cursor-pointer w-full text-right lg:hover:text-coral">Dashboard</a></li>
-                    <li><a href="profile.php" class="cursor-pointer lg:hover:text-coral">Profile</a></li>
-                    <li><a href="logout.php" class="cursor-pointer lg:hover:text-coral">Logout</a></li>
-                    <li class="h-[24px]"><button id="theme-toggle"><img class="size-6 dark:hidden" src="assets/dark.svg" alt="dark"><img class="size-6 hidden dark:block" src="assets/light.svg" alt="dark"></button></li>
-                    
-                </ul>
-            <!-- Large -->
-            
-            
+            <ul class="absolute shadow-md mt-[70px] lg:py-3 text-almostblack dark:text-lightgray bg-white dark:bg-darkslate pb-8 flex-col items-end flex w-full lg:static top-0 right-0 p-4 lg:text-lg float-right gap-4 lg:p-0 lg:justify-end lg:items-center lg:flex-row lg:shadow-none lg:mt-0 text-xl" x-show="isOpen" x-cloak x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0  translate-x-12"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-75"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 translate-x-4">
+                <li><a href="index.php" class="cursor-pointer w-full text-right text-coral">Dashboard</a></li>
+                <li><a href="profile.php" class="cursor-pointer lg:hover:text-coral">Profile</a></li>
+                <li><a href="logout.php" class="cursor-pointer lg:hover:text-coral">Logout</a></li>
+                <li class="h-[24px]"><button id="theme-toggle"><img class="size-6 dark:hidden" src="assets/dark.svg" alt="dark"><img class="size-6 hidden dark:block" src="assets/light.svg" alt="dark"></button></li>
+            </ul>
         </nav>
     </header>
 
@@ -399,7 +391,7 @@ if ($streak >= 3) {
     <h3 class="text-lg font-semibold text-almostblack dark:text-lightgray">Progress Chart</h3>
     <div x-data="{ isOpen: false, openedWithKeyboard: false }" class="relative" @keydown.esc.window="isOpen = false, openedWithKeyboard = false">
         <!-- Toggle Button -->
-        <button  type="button" @click="isOpen = ! isOpen" class="inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-md border border-neutral-300 bg-neutral-50 px-4 py-2 text-sm font-medium tracking-wide transition hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:border-neutral-700 dark:bg-neutral-900 dark:focus-visible:outline-neutral-300" aria-haspopup="true" @keydown.space.prevent="openedWithKeyboard = true" @keydown.enter.prevent="openedWithKeyboard = true" @keydown.down.prevent="openedWithKeyboard = true" :class="isOpen || openedWithKeyboard ? 'text-neutral-900 dark:text-white' : 'text-neutral-600 dark:text-neutral-300'" :aria-expanded="isOpen || openedWithKeyboard">
+        <button type="button" @click="isOpen = ! isOpen" class="inline-flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-md border border-neutral-300 bg-neutral-50 px-4 py-2 text-sm font-medium tracking-wide hover:opacity-75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-800 dark:border-neutral-700 dark:bg-neutral-900 dark:focus-visible:outline-neutral-300" aria-haspopup="true" @keydown.space.prevent="openedWithKeyboard = true" @keydown.enter.prevent="openedWithKeyboard = true" @keydown.down.prevent="openedWithKeyboard = true" :class="isOpen || openedWithKeyboard ? 'text-neutral-900 dark:text-white' : 'text-neutral-600 dark:text-neutral-300'" :aria-expanded="isOpen || openedWithKeyboard">
             <span id="btn-label"> 7 Days</span>
             <svg aria-hidden="true" fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4 totate-0">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
