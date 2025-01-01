@@ -86,7 +86,7 @@ include "validation/autolog.php";
                 <!-- Add more links -->
               </div> 
               <div class="text-center flex flex-col justify-center items-center">
-                <p class="text-xs">© 2024 Shotstreak. All rights reserved.</p>
+                <p class="text-xs">© <?php echo date("Y") ?> Shotstreak. All rights reserved.</p>
                 <p class="text-xs">Website Created by Simon Papp - <a target="_blank" class="font-bold" href="https://simonsites.com">SimonSites</a></p>
               </div>
             </div>

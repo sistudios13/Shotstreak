@@ -139,7 +139,7 @@ $team_name = $res->fetch_assoc()['team_name'];
     </div>
     </div>
     <footer class="bg-lightgray py-8 text-almostblack dark:text-lightgray dark:bg-almostblack static bottom-0 left-0 w-full">
-          <p class="text-sm text-center">© 2024 Shotstreak. All rights reserved.</p>
+          <p class="text-sm text-center">© <?php echo date("Y") ?> Shotstreak. All rights reserved.</p>
     </footer>
     <script src="confirmpass.js"></script>
     <script>

@@ -160,7 +160,7 @@ if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
         </div>
     <?php endif;?>
     <footer class="bg-lightgray py-8 text-almostblack dark:text-lightgray dark:bg-almostblack static bottom-0 left-0 w-full">
-          <p class="text-sm text-center">© 2024 Shotstreak. All rights reserved.</p>
+          <p class="text-sm text-center">© <?php echo date("Y") ?> Shotstreak. All rights reserved.</p>
     </footer>
 </body>
 </html>
