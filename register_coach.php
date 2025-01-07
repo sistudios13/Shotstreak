@@ -18,7 +18,6 @@ $coach_name = $_POST['coach_name'];
 $email = $_POST['email'];
 $password = $_POST['password'];
 $team_name = $_POST['team_name'];
-
 // Validate input
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo "<script>setTimeout(() => window.location.href = 'error.php?a=Invalid registration&b=index.php', 700);</script>";

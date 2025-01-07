@@ -9,7 +9,7 @@ if (!isset($_POST['email'], $_POST['password']) ) {
     exit();
 }
 
-
+ 
 // Prepare our SQL, preparing the SQL statement will prevent SQL injection.
 if ($stmt = $con->prepare('SELECT id, password, username, user_type FROM accounts WHERE email = ?')) {
 	// Bind parameters (s = string, i = int, b = blob, etc), in our case the username is a string so we use "s"
