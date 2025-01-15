@@ -163,7 +163,8 @@ $leaderquery = "
     u.username,
     SUM(s.shots_made) AS total_shots_made,
     SUM(s.shots_taken) AS total_shots_taken,
-    (SUM(s.shots_made) / SUM(s.shots_taken)) * 100 AS shooting_percentage
+    (SUM(s.shots_made) / SUM(s.shots_taken)) * 100 AS shooting_percentage, 
+    u.verified
 FROM 
     accounts u
 JOIN 
@@ -171,7 +172,7 @@ JOIN
 GROUP BY 
     u.id, u.username
 HAVING 
-    total_shots_taken > 100  -- Ensure users who have taken shots are considered
+    total_shots_taken > 100 AND verified  -- Ensure users who have taken shots are considered
 ORDER BY 
     total_shots_taken DESC
 LIMIT 10;
