@@ -20,6 +20,11 @@ $conn = $con;
 $user_id = $_SESSION['id'];
 $user_name = $_SESSION['name'];
 
+$veri = $conn->prepare("SELECT verified FROM accounts WHERE id = ?");
+$veri->bind_param("i", $user_id);
+$veri->execute();
+$verif = $veri->get_result();
+$verified = $verif->fetch_assoc()['verified'];
 
 // Fetch today's shot goal
 $date_today = date('Y-m-d');
@@ -484,7 +489,7 @@ if ($streak >= 3) {
     </div>
     <div class="container mx-auto text-almostblack">
         <div class="bg-white dark:bg-darkslate p-8 rounded-lg shadow-md ">
-            <h3 class="text-lg font-semibold text-almostblack dark:text-lightgray mb-4">Leaderboard</h3>
+            <h3 class="text-lg font-semibold text-almostblack dark:text-lightgray mb-4">Leaderboard <?php if($verified !== 1) {echo 'NOT VERIFIED MESSAGE';} ?></h3>
             <table class="min-w-full table-auto text-left dark:text-lightgray">
                 <thead class="">
                     <tr>

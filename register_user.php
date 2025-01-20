@@ -15,6 +15,8 @@ if (empty($_POST['username']) || empty($_POST['password']) || empty($_POST['emai
 // We need to check if the account with that username exists.
 // Parameters
 
+$token = bin2hex(random_bytes(50));
+
 if (preg_match('/^[a-zA-Z0-9]+$/', $_POST['username']) == 0) {
 	echo "<script>setTimeout(() => window.location.href = 'error.php?a=Invalid Username&b=register.php', 700);</script>";
     exit();
@@ -49,10 +51,10 @@ if ($stmt = $con->prepare('SELECT id, password FROM accounts WHERE username = ? 
         
 	} else {
 		// Username doesn't exists, insert new account
-        if ($stmt = $con->prepare('INSERT INTO accounts (username, password, email, user_type) VALUES (?, ?, ?, "user")')) {
+        if ($stmt = $con->prepare('INSERT INTO accounts (username, password, email, user_type, verification) VALUES (?, ?, ?, "user", ?)')) {
             // We do not want to expose passwords in our database, so hash the password and use password_verify when a user logs in.
             $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-            $stmt->bind_param('sss', $_POST['username'], $password, $_POST['email']);
+            $stmt->bind_param('ssss', $_POST['username'], $password, $_POST['email'], $token);
             $stmt->execute();	
         }
 		else {
@@ -78,7 +80,7 @@ if ($stmt = $con->prepare('SELECT id, password FROM accounts WHERE username = ? 
 	
 	
 else {
-	// Something is wrong with the SQL statement, so you must check to make sure your accounts table exists with all 3 fields.
+	// Something is wrong with the SQL statement
 	echo 'Could not prepare statement!';
 }
 $con->close();
