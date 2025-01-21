@@ -192,6 +192,26 @@ if (isset($_SESSION['loggedin'])) {
                   </div>
               </div>
           </div>
+          <div x-data="{ isExpanded: false }" class="divide-y divide-neutral-300 dark:divide-neutral-700">
+              <button id="controlsAccordionItemFive" type="button" class="flex w-full items-center justify-between gap-4 bg-neutral-50 p-4 text-left underline-offset-2 hover:bg-neutral-50/75 focus-visible:bg-neutral-50/75 focus-visible:underline focus-visible:outline-none dark:bg-neutral-900 dark:hover:bg-neutral-900/75 dark:focus-visible:bg-neutral-900/75" aria-controls="accordionItemThree" @click="isExpanded = ! isExpanded" :class="isExpanded ? 'text-onSurfaceStrong dark:text-onSurfaceDarkStrong font-bold'  : 'text-onSurface dark:text-onSurfaceDark font-medium'" :aria-expanded="isExpanded ? 'true' : 'false'">
+              Why am I not on the leaderboard?
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor" class="size-5 shrink-0 transition" aria-hidden="true" :class="isExpanded  ?  'rotate-180'  :  ''">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
+                  </svg>
+              </button>
+              <div x-cloak x-show="isExpanded" id="accordionItemFive" role="region" aria-labelledby="controlsAccordionItemFive" x-collapse>
+                  <div class="p-4 text-sm sm:text-base text-pretty">
+                  There are three reasons that could lead to your account not being visible:
+                  <br>
+                  <br>
+                  1. You are not in the top 10 of total shots taken. Keep working at it!
+                  <br>
+                  2. You have not taken 100 total shots. This is the minimum amount to be added to the leaderboard.
+                  <br>
+                  3. You have not verified the email associated with your account. You can do this on the profile page.
+                  </div>
+              </div>
+          </div>
         </div>
       </div>
     </section>

@@ -489,14 +489,15 @@ if ($streak >= 3) {
     </div>
     <div class="container mx-auto text-almostblack">
         <div class="bg-white dark:bg-darkslate p-8 rounded-lg shadow-md ">
-            <h3 class="text-lg font-semibold text-almostblack dark:text-lightgray mb-4">Leaderboard <?php if($verified !== 1) {echo 'NOT VERIFIED MESSAGE';} ?></h3>
+            <div class="flex items-center justify-between pb-2">
+                <h3 class="text-lg font-semibold text-almostblack dark:text-lightgray">Leaderboard</h3><?php if($verified !== 1) {echo '<a href="support.php#faq" class="text-base font-semibold text-right text-coral">Not on the leaderboard?</a>';} ?>
+            </div>
             <table class="min-w-full table-auto text-left dark:text-lightgray">
                 <thead class="">
                     <tr>
                         <th class="px-2 py-2 w-1/6">Rank</th>
                         <th class="px-2 py-2 w-2/6">Username</th>
                         <th class="px-2 py-2 w-1/6">Shots</th>
-
                         <th class="px-2 py-2 w-1/6">%</th>
                     </tr>
                 </thead>

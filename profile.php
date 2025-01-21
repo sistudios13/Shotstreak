@@ -12,6 +12,12 @@ if ($_SESSION['type'] != 'user') {
 }
 require 'db/db_connect.php';
 
+$veri = $con->prepare("SELECT verified FROM accounts WHERE id = ?");
+$veri->bind_param("i", $_SESSION["id"]);
+$veri->execute();
+$verif = $veri->get_result();
+$verified = $verif->fetch_assoc()['verified'];
+
 // We don't have the password or email info stored in sessions, so instead, we can get the results from the database.
 $stmt = $con->prepare('SELECT password, email FROM accounts WHERE id = ?');
 // In this case we can use the account ID to get the account info.
@@ -88,10 +94,17 @@ $stmt->close();
                         <p class="text-lg font-bold text-coral">Username:</p>
                         <p class="text-almostblack dark:text-lightgray "><?=htmlspecialchars($_SESSION['name'], ENT_QUOTES)?></p>
                     </div>
-                    <div>
-                        <p class="text-lg font-bold text-coral">Email:</p>
-                        <p class="text-almostblack dark:text-lightgray "><?=htmlspecialchars($email, ENT_QUOTES)?></p>
-                    </div>
+                    <div class="flex justify-between w-full gap-2 items-center">
+                        <div>
+                            <p class="text-lg font-bold text-coral">Email:</p>
+                            <p class="text-almostblack break-all dark:text-lightgray "><?=htmlspecialchars($email, ENT_QUOTES)?></p>
+                        </div>
+                        <?php
+                            if ($verified !== 1) {
+                                echo '<a href="verify.php" class="md:hover:bg-coralhov text-sm text-right bg-coral text-white h-fit py-1 px-2 rounded-md font-semibold hover:bg-coral-red-light transition-colors">Verify Email</a>';
+                            }
+                        ?>
+                        </div>
                     <div class="pt-2 flex items-center gap-2">
                         <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ff6f61" d="M64 256l0-96 160 0 0 96L64 256zm0 64l160 0 0 96L64 416l0-96zm224 96l0-96 160 0 0 96-160 0zM448 256l-160 0 0-96 160 0 0 96zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"/></svg>
                         <a href="export.php" class="py-2 dark:text-lightgray font-semibold">Export All Data</a>

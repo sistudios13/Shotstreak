@@ -7,3 +7,7 @@ document.getElementById('registerForm').addEventListener('submit', function(even
         event.preventDefault(); // Prevent form submission
     }
 });
+
+// ALTER TABLE accounts ADD verification VARCHAR(255)
+
+// ALTER TABLE accounts ADD verified tinyint(1)
