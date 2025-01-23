@@ -101,7 +101,7 @@ $stmt->close();
                         </div>
                         <?php
                             if ($verified !== 1) {
-                                echo '<a href="verify.php" class="md:hover:bg-coralhov text-sm text-right bg-coral text-white h-fit py-1 px-2 rounded-md font-semibold hover:bg-coral-red-light transition-colors">Verify Email</a>';
+                                echo '<a href="verification.php" class="md:hover:bg-coralhov text-sm text-right bg-coral text-white h-fit py-1 px-2 rounded-md font-semibold hover:bg-coral-red-light transition-colors">Verify Email</a>';
                             }
                         ?>
                         </div>

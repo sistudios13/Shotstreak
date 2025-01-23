@@ -1,26 +1,38 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['loggedin'])) {
+	header('Location: index.php');
+	exit;
+}
+
+if ($_SESSION['type'] != 'user') {
+	header('Location: index.php');
+	exit;
+}
 
 require 'db/db_connect.php';
 $conn = $con;
 
-if (isset($_POST['email'])) {
-    $email = $_POST['email'];
-    $token = bin2hex(random_bytes(50)); // Generate random token
-    $expires = date("Y-m-d H:i:s", strtotime('+1 hour')); // Token valid for 1 hour
-    
-    // Check if the email exists in the users table
-    $query = "SELECT * FROM accounts WHERE email = ?";
+$st = $conn->prepare('SELECT verified FROM accounts WHERE id = ?');
+$st->bind_param('s', $_SESSION['id']);
+$st->execute();
+$str = $st->get_result();
+$stf = $str->fetch_assoc();
+$verified = $stf['verified'];
+
+if ($verified == 0) {
+    // get account info
+    $query = "SELECT * FROM accounts WHERE id = ?";
     $stmt = $conn->prepare(query: $query);
-    $stmt->bind_param("s", $email);
+    $stmt->bind_param("i", $_SESSION["id"]);
     $stmt->execute();
     $result = $stmt->get_result();
+    $assoc = $result->fetch_assoc();
     
     if ($result->num_rows > 0) {
-        // Update the user table with the reset token and expiration date
-        $update = "UPDATE accounts SET reset_token = ?, token_expiration = ? WHERE email = ?";
-        $stmt = $conn->prepare($update);
-        $stmt->bind_param("sss", $token, $expires, $email);
-        $stmt->execute();
+        $token = $assoc['verification'];
+        $email = $assoc['email'];
         
 
         $headers = "MIME-Version: 1.0" . "\r\n";
@@ -28,7 +40,7 @@ if (isset($_POST['email'])) {
         $headers .= "From: Shotstreak <shotstreak@shotstreak.ca> \r\n";
 
 
-        // Send reset email (Example)
+        // Send verification email
         $reset_link = "https://localhost/shotstreak/reset_password.php?token=$token";
 
         $message = "
@@ -118,12 +130,12 @@ if (isset($_POST['email'])) {
 
         ";
 
-        mail($email, "Shotstreak Password Reset", $message, $headers);
+        mail($email, "Shotstreak Email Verification", $message, $headers);
         
-        header("Location: success.php?b=reset.php");
+        header("Location: verify.php");
         
     } else {
-        header("Location: error.php?a=User Not Found&b=login.php");
+        header("Location: error.php?a=An error occurred&b=profile.php");
         exit();
     }
 }

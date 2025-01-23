@@ -10,4 +10,4 @@ document.getElementById('registerForm').addEventListener('submit', function(even
 
 // ALTER TABLE accounts ADD verification VARCHAR(255)
 
-// ALTER TABLE accounts ADD verified tinyint(1)
+// ALTER TABLE `accounts` ADD `verified` BOOLEAN NOT NULL DEFAULT FALSE AFTER `verification`;
