@@ -64,7 +64,7 @@ include "validation/autolog.php";
     
                 <!-- Already have an account -->
                 <div class="text-center mt-4">
-                    <p class="text-sm text-gray-600">Already have an account? <a href="login.php" class="text-coral font-semibold">Log in</a></p>
+                    <p class="text-sm text-gray-600">Already have an account? <a href="login.php" class="text-coral font-semibold">Login</a></p>
                     <p class="text-sm text-gray-600">Are you a coach? <a href="coachreg.php" class="text-coral font-semibold">Create a coach account</a></p>
                 </div>
             </div>

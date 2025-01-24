@@ -51,7 +51,7 @@ include "validation/autolog.php";
     
                 <!-- Already have an account -->
                 <div class="text-center mt-4">
-                    <p class="text-sm text-gray-600"> <a href="login.php" class="text-coral font-semibold">Back to login</a></p>
+                    <p class="text-sm text-gray-600"> <a href="login.php" class="text-coral font-semibold">Back to Login</a></p>
                 </div>
             </div>
         </div>

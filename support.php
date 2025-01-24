@@ -121,7 +121,7 @@ if (isset($_SESSION['loggedin'])) {
             <ul class="space-y-4">
               <li>
                 <p class="text-lg ml-1 font-bold">Having trouble logging in?</p>
-                <p>Double-check your credentials or use the “Forgot Password” link to reset your login.</p>
+                <p>Double-check your credentials or use the “Forgot Password” link to reset your password.</p>
               </li>
               <li>
                 <p class="text-lg ml-1 font-bold">Shot tracking not saving?</p>
@@ -149,7 +149,7 @@ if (isset($_SESSION['loggedin'])) {
               </button>
               <div x-cloak x-show="isExpanded" id="accordionItemOne" role="region" aria-labelledby="controlsAccordionItemOne" x-collapse>
                   <div class="p-4 text-sm sm:text-base text-pretty">
-                    You can set or update your daily shot goal from your profile settings or dashboard. Just head to the “Change Goal” section, enter your new target, and save it.
+                    You can set or update your daily shot goal from your dashboard. Just head to the “Change Goal” section, enter your new target, and save it.
                   </div>
               </div>
           </div>
