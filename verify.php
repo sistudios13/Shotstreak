@@ -52,7 +52,7 @@ if ($result['verified'] == 1) {
             }
         </style>
     </head>
-    <body class="bg-lightgray">
+    <body class="bg-lightgray dark:bg-almostblack">
     <!-- Navbar -->
     <header id="navbar" class="sticky shadow-md bg-white dark:bg-darkslate  top-0 w-full z-20">
         <nav class="flex justify-between lg:container mx-auto px-4 lg:px-6 py-3 lg:py-0 " x-data="{isOpen : false, current: 1}" @click.outside="() => { if(window.innerWidth < 1024) {isOpen = false} }" x-init="if(window.innerWidth >= 1024) {isOpen = true}">
@@ -82,30 +82,28 @@ if ($result['verified'] == 1) {
     </header>
         <!-- Registration Form Container -->
         <div class="flex items-center justify-center min-h-screen">
-            <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+            <div class="bg-white dark:bg-darkslate p-8 rounded-lg shadow-lg max-w-md w-full">
                 <!-- Logo -->
                 <div class="text-center mb-6">
                     <a href="index.php"><img src="assets/isoLogo.svg" alt="Shotstreak Logo" class="mx-auto h-16"></a>
-                    <h2 class="text-xl font-bold text-almostblack mt-4">Verify Your email</h2>
+                    <h2 class="text-xl font-bold text-almostblack dark:text-lightgray mt-4">Verify Your email</h2>
                 </div>
                 <div>
                     
-                    <p class="text-lg">
+                    <p class="text-lg dark:text-lightgray">
                         We've sent you a verification email. Please check your inbox and follow the instructions in the email. 
                             <br>
                             <br>
                             <div class="flex gap-3 items-center">
                                 <svg width="40" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ff6f61" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24l0 112c0 13.3-10.7 24-24 24s-24-10.7-24-24l0-112c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
-                                <b>Make sure to check your <span class="text-coral">spam and junk</span> inboxes!</b>
+                                <b class="dark:text-lightgray">Make sure to check your <span class="text-coral">spam and junk</span> inboxes!</b>
                             </div>
                             <br>
                             <br>
-                        <span>If you have not received an email:</span>
+                        <span class="dark:text-lightgray">If you have not received an email, go back to the profile page and attempt to verify your email again</span>
                     </p>
                 </div>
-                <form class="pt-2">
-                    <button type="sumbit" class="w-full bg-coral md:hover:bg-coralhov text-white py-2 rounded-md font-semibold hover:bg-coral-red-light transition-colors">Resend Email</button>
-                </form>
+                
                 <div class="text-center mt-4">
                     <p class="text-sm text-gray-600"> <a href="home.php" class="text-coral font-semibold">Back to Dashboard</a></p>
                 </div>

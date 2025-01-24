@@ -209,6 +209,8 @@ if (isset($_SESSION['loggedin'])) {
                   2. You have not taken 100 total shots. This is the minimum amount to be added to the leaderboard.
                   <br>
                   3. You have not verified the email associated with your account. You can do this on the profile page.
+                  <br>
+                  4. Your account has been flagged/banned for suspicious activity or inappropriate content. To appeal, you can send us an email at <a href="mailto:support@shotstreak.ca" class="underline underline-offset-2 text-black dark:text-white">support@shotstreak.ca</a>
                   </div>
               </div>
           </div>

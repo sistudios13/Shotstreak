@@ -41,7 +41,7 @@ if ($verified == 0) {
 
 
         // Send verification email
-        $reset_link = "https://localhost/shotstreak/reset_password.php?token=$token";
+        $verify_link = "https://localhost/shotstreak/verify_email.php?token=$token";
 
         $message = "
         <!DOCTYPE html>
@@ -108,14 +108,14 @@ if ($verified == 0) {
 
         <div class='email-container'>
             <div class='email-header'>
-                <h1>Reset Your Shotstreak Password</h1>
+                <h1>Verify Your Shotstreak Account Email</h1>
                 <img title='logo' src='https://shotstreak.simonsites.com/assets/isoLogo.svg' alt='Logo' height='200' width='200'>
             </div>
             
             <div class='email-body'>
-                <p><b>Reset Your Shotstreak Password</b></p>
+                <p><b>Verify your Shotstreak account email</b></p>
                 
-                <a href='$reset_link' class='cta-button'>Reset Password</a>
+                <a href='$verify_link' class='cta-button'>Verify Email</a>
                 
                 <p>If you did not expect this email, feel free to ignore it.</p>
             </div>
@@ -133,9 +133,15 @@ if ($verified == 0) {
         mail($email, "Shotstreak Email Verification", $message, $headers);
         
         header("Location: verify.php");
+        exit();
         
     } else {
         header("Location: error.php?a=An error occurred&b=profile.php");
         exit();
     }
+}
+
+else {
+    header("Location: index.php");
+    exit();
 }
