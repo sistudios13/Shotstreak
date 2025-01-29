@@ -52,6 +52,7 @@ $badge2 = false;
 $badge3 = false;
 $badge4 = false;
 $badge5 = false;
+$pom = false;
 
 
 if ($stats_data['total_taken'] >= 500) {
@@ -77,6 +78,11 @@ if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
     $badge5 = true;
 }
 }
+
+
+if($user_id == 47) {
+    $pom = true;
+}
 ?>
 
 
@@ -97,6 +103,11 @@ if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Shotstreak" />
     <link rel="manifest" href="assets/site.webmanifest" /></head>
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
 </head>
 <body class="bg-lightgray dark:bg-almostblack text-almostblack dark:text-lightgray">
     <!-- Navbar -->
@@ -153,7 +164,7 @@ if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
             </div>
             <div class="mt-8 ">
                 <h3 class="text-2xl font-bold text-coral-red">Achievements</h3>
-                <div class="relative grid grid-cols-6 mt-2 lg:grid-cols-10" x-data="{b1 : false, b2 : false, b3 : false, b4: false, b5 : false}">
+                <div class="relative grid grid-cols-6 mt-2 lg:grid-cols-10" x-data="{b1 : false, b2 : false, b3 : false, b4: false, b5 : false, b6: false}">
             
             <div class=" <?php if(!$badge1) { echo 'hidden'; }?> ">
                 <img x-on:click="b1 = !b1" @click.away="b1 = false" class="h-16 cursor-pointer" src="assets/icebreaker.svg" alt="badge1">    
@@ -171,11 +182,17 @@ if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
             <div class=" <?php if(!$badge5) { echo 'hidden'; }?> ">
                 <img x-on:click="b5 = !b5" @click.away="b5 = false" class="h-16 cursor-pointer" src="assets/pinpoint.svg" alt="badge5">
             </div>
-            <p x-show="b1" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Icebreaker: Take a total of over 500 shots</p>
-            <p x-show="b2" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Precision Shooter: Maintain a total average of over 40%</p>
-            <p x-show="b3" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Millenium Marksman: Make a total of over 1000 shots</p>
-            <p x-show="b4" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">On a Roll: Maintain a total streak over 3 days long. Keep it up!</p>
-            <p x-show="b5" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Pinpoint Shooter: Maintain a total average of over 70%</p>
+            <div class=" <?php if(!$pom) { echo 'hidden'; }?> ">
+                <img x-on:click="b6 = !b6" @click.away="b6 = false" class="h-16 cursor-pointer" src="assets/pompom.svg" alt="POM">
+            </div>
+            <p x-show="b1" x-cloak class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Icebreaker: Take a total of over 500 shots</p>
+            <p x-show="b2" x-cloak class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Precision Shooter: Maintain a total average of over 40%</p>
+            <p x-show="b3" x-cloak class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Millenium Marksman: Make a total of over 1000 shots</p>
+            <p x-show="b4" x-cloak class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">On a Roll: Maintain a current streak over 3 days long. Keep it up!</p>
+            <p x-show="b5" x-cloak class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Pinpoint Shooter: Maintain a total average of over 70%</p>
+            <?php if($pom) {?>
+                <p x-show="b6" x-cloak class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">The Pom badge POMPOMMM</p>
+            <?php } ?>
         </div>
             </div>
         </div>
