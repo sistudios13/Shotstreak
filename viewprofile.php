@@ -73,13 +73,10 @@ if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
 }
 }
 
-<<<<<<< Updated upstream
 
 if($user_id == 47) {
     $pom = true;
 }
-=======
->>>>>>> Stashed changes
 ?>
 <!DOCTYPE html>
 <html lang="en">

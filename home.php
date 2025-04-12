@@ -107,7 +107,8 @@ $stmt->execute();
 $result = $stmt->get_result();
 $best_day = $result->fetch_assoc()['shooting_percentage'] ?? 0;
 
-// quick stats
+
+// Fetch quick stats
 $sql_stats = "SELECT SUM(shots_made) AS total_shots, 
 			  SUM(shots_taken) AS total_taken,
                
@@ -120,13 +121,16 @@ $stmt->execute();
 $result_stats = $stmt->get_result();
 $stats_data = $result_stats->fetch_assoc();
 
+
 // Badges
+
 $badge1 = false;
 $badge2 = false;
 $badge3 = false;
 $badge4 = false;
 $badge5 = false;
 $pom = false;
+
 
 if ($stats_data['total_taken'] >= 500) {
     $badge1 = true;
@@ -149,16 +153,12 @@ if ($stats_data['total_taken'] == 0) {
     }
 }
 
-<<<<<<< Updated upstream
-if($user_id == 47) {
+if ($user_id == 47) {
     $pom = true;
 }
 
 
 //Leaderboard
-=======
-// Leaderboard
->>>>>>> Stashed changes
 $leaderquery = "
     SELECT 
     u.id,
@@ -192,7 +192,6 @@ if ($result->num_rows > 0) {
 
 // Streak
 
-// daily shot records and goal data
 $query = "SELECT shots_taken, shot_date, goal FROM user_shots WHERE user_id = ? ORDER BY shot_date DESC";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
@@ -202,32 +201,32 @@ $result = $stmt->get_result();
 $streak = 0;
 $previous_day = null;
 
-// calculate the streak
+// Check each record to calculate the streak
 while ($row = $result->fetch_assoc()) {
     $shots_taken = $row['shots_taken'];
     $shot_date = $row['shot_date'];
     $goal = $row['goal'];
 
-    // if user met their goal on that day
+    // If the user met their goal on that day
     if ($shots_taken >= $goal) {
         if ($previous_day === null) {
-            $streak++;  // start streak
+            $streak++;  // Start the streak
         } else {
-            // Check if one day before the current day
+            // Check if the previous day is exactly one day before the current day
             $days_diff = (strtotime($previous_day) - strtotime($shot_date)) / (60 * 60 * 24);
             if ($days_diff == 1) {
-                $streak++;  // Continue streak
+                $streak++;  // Continue the streak
             } else {
-                break;  // Break the streak if there's a gap
+                break;  
             }
         }
-        $previous_day = $shot_date;  // Update the last day
+        $previous_day = $shot_date;  // Update the last day checked
     } else {
-        break;
+        break; 
     }
 }
 
-// Streak Badge
+//Streak Badge
 if ($streak >= 3) {
     $badge4 = true;
 }
@@ -235,7 +234,6 @@ if ($streak >= 3) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -243,6 +241,7 @@ if ($streak >= 3) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="tailwindextras.js"></script>
+
     <link rel="stylesheet" href="main.css">
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
@@ -279,6 +278,7 @@ if ($streak >= 3) {
 </head>
 
 <body class="bg-lightgray dark:bg-almostblack min-h-screen">
+
     <!-- Navbar -->
     <header id="navbar" class="sticky shadow-md bg-white dark:bg-darkslate  top-0 w-full z-20">
         <nav class="flex justify-between lg:container mx-auto px-4 lg:px-6 py-3 lg:py-0 " x-data="{isOpen : false, current: 1}" @click.outside="() => { if(window.innerWidth < 1024) {isOpen = false} }" x-init="if(window.innerWidth >= 1024) {isOpen = true}">
@@ -328,9 +328,11 @@ if ($streak >= 3) {
                 </svg>
             </button>
         </div>
+
         <!-- Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- summary -->
+
+            <!-- Daily Summary -->
             <div class="bg-white dark:bg-darkslate p-6 rounded-lg shadow-md flex flex-col gap-4">
                 <h3 class="text-lg font-semibold text-almostblack dark:text-lightgray mb-4">Today's Goal</h3>
                 <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:gap-0">
@@ -359,6 +361,7 @@ if ($streak >= 3) {
                 <div class="flex flex-row justify-between gap-4 mt-auto">
                     <a href="shotgoal.php"><button class="mt-1 text-coral font-bold p-1 px-1.5 md:px-6 md:py-4 w-fit mx-auto border-2 border-coral md:hover:bg-coral md:hover:text-white transition-colors rounded-md ">Change Goal</button></a>
                     <a href="dailyshots.php"><button class="mt-1 text-coral bg-coral font-bold p-1 px-1.5 md:px-6 md:py-4 w-fit mx-auto border-2 border-coral md:hover:bg-white md:hover:text-coral dark:md:hover:bg-darkslate text-white transition-colors rounded-md ">Input Today's Shots</button></a>
+
                 </div>
             </div>
 
@@ -389,53 +392,28 @@ if ($streak >= 3) {
                 <div id="pc1">
                     <canvas id="progressChart" width="400" height="200"></canvas>
                 </div>
+
+
+
                 <div id="pc2" style="display: none;">
 
 
                     <canvas id="progressChart2" width="400" height="200"></canvas>
                 </div>
+
+
+
                 <div id="pc3" style="display: none;">
 
 
                     <canvas id="progressChart3" width="400" height="200"></canvas>
                 </div>
             </div>
-            <!-- Quick Stats -->
+
+            <!-- Quick Stats Card -->
             <div class="bg-white dark:bg-darkslate p-6 rounded-lg shadow-md">
                 <h3 class="text-lg font-semibold text-almostblack dark:text-lightgray mb-4">Quick Stats</h3>
                 <ul class="space-y-2">
-<<<<<<< Updated upstream
-            <li class="flex justify-between text-almostblack dark:text-lightgray">
-                <span>Total Shots Made:</span>
-                <span class="font-semibold text-dark-gray"><?php echo $stats_data['total_shots']; ?></span>
-            </li>
-			<li class="flex justify-between text-almostblack dark:text-lightgray">
-                <span>Total Shots Taken:</span>
-                <span class="font-semibold text-dark-gray"><?php echo $stats_data['total_taken']; ?></span>
-            </li>
-            <li class="flex justify-between text-almostblack dark:text-lightgray">
-                <span>Best Shooting Day:</span>
-                <span class="font-semibold text-dark-gray"><?php echo round($best_day, 0) ?>% Accuracy</span>
-            </li>
-            <li class="flex justify-between text-almostblack dark:text-lightgray">
-                <span>Goal Reached:</span>
-                <span class="font-semibold text-dark-gray"><?php echo $stats_data['days_count']; ?> Days</span>
-            </li>
-            <li class="flex justify-between text-almostblack dark:text-lightgray">
-                <span>Shooting Accuracy:</span>
-                <span class="font-semibold text-dark-gray"><?php if($stats_data['total_taken'] == 0) {echo 0;} else {echo round($stats_data['total_shots'] / $stats_data['total_taken'] * 100, 0);} ?>% Accuracy</span>
-            </li>
-            
-        </ul>
-    </div>
-    <div class="bg-white dark:bg-darkslate p-6 rounded-lg shadow-md">
-        <h3 class="text-lg font-semibold text-almostblack dark:text-lightgray mb-4">Badges</h3>
-        <div class="relative grid grid-cols-6 lg:grid-cols-10" x-data="{b1 : false, b2 : false, b3 : false, b4: false, b5 : false, b6: false}">
-            
-            <div class=" <?php if(!$badge1) { echo 'hidden'; }?> ">
-                <img x-on:click="b1 = !b1" @click.away="b1 = false" class="h-16 cursor-pointer" src="assets/icebreaker.svg" alt="badge1">    
-            </div>
-=======
                     <li class="flex justify-between text-almostblack dark:text-lightgray">
                         <span>Total Shots Made:</span>
                         <span class="font-semibold text-dark-gray"><?php echo $stats_data['total_shots']; ?></span>
@@ -460,13 +438,12 @@ if ($streak >= 3) {
                             echo round($stats_data['total_shots'] / $stats_data['total_taken'] * 100, 0);
                         } ?>% Accuracy</span>
                     </li>
->>>>>>> Stashed changes
 
                 </ul>
             </div>
             <div class="bg-white dark:bg-darkslate p-6 rounded-lg shadow-md">
                 <h3 class="text-lg font-semibold text-almostblack dark:text-lightgray mb-4">Badges</h3>
-                <div class="relative grid grid-cols-6 lg:grid-cols-10" x-data="{b1 : false, b2 : false, b3 : false, b4: false, b5 : false}">
+                <div class="relative grid grid-cols-6 lg:grid-cols-10" x-data="{b1 : false, b2 : false, b3 : false, b4: false, b5 : false, b6: false}">
 
                     <div class=" <?php if (!$badge1) {
                         echo 'hidden';
@@ -494,52 +471,22 @@ if ($streak >= 3) {
                     } ?> ">
                         <img x-on:click="b5 = !b5" @click.away="b5 = false" class="h-16 cursor-pointer" src="assets/pinpoint.svg" alt="badge5">
                     </div>
+                    <div class=" <?php if (!$pom) {
+                        echo 'hidden';
+                    } ?> ">
+                        <img x-on:click="b6 = !b6" @click.away="b6 = false" class="h-16 cursor-pointer" src="assets/pompom.svg" alt="POM">
+                    </div>
                     <p x-show="b1" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Icebreaker: Take a total of over 500 shots</p>
                     <p x-show="b2" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Precision Shooter: Maintain a total average of over 40%</p>
                     <p x-show="b3" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Millenium Marksman: Make a total of over 1000 shots</p>
                     <p x-show="b4" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">On a Roll: Maintain a current streak over 3 days long. Keep it up!</p>
                     <p x-show="b5" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Pinpoint Shooter: Maintain a total average of over 70%</p>
+                    <?php if ($pom) { ?>
+                        <p x-show="b6" x-cloak class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">The Pom badge POMPOMMM</p>
+                    <?php } ?>
+
                 </div>
             </div>
-<<<<<<< Updated upstream
-            <div class=" <?php if(!$badge4) { echo 'hidden'; }?> ">
-                <img x-on:click="b4 = !b4" @click.away="b4 = false" class="h-16 cursor-pointer" src="assets/crusher.svg" alt="badge4">
-            </div>
-            <div class=" <?php if(!$badge5) { echo 'hidden'; }?> ">
-                <img x-on:click="b5 = !b5" @click.away="b5 = false" class="h-16 cursor-pointer" src="assets/pinpoint.svg" alt="badge5">
-            </div>
-            <div class=" <?php if(!$pom) { echo 'hidden'; }?> ">
-                <img x-on:click="b6 = !b6" @click.away="b6 = false" class="h-16 cursor-pointer" src="assets/pompom.svg" alt="POM">
-            </div>
-            <p x-show="b1" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Icebreaker: Take a total of over 500 shots</p>
-            <p x-show="b2" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Precision Shooter: Maintain a total average of over 40%</p>
-            <p x-show="b3" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Millenium Marksman: Make a total of over 1000 shots</p>
-            <p x-show="b4" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">On a Roll: Maintain a current streak over 3 days long. Keep it up!</p>
-            <p x-show="b5" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Pinpoint Shooter: Maintain a total average of over 70%</p>
-            <?php if($pom) {?>
-                <p x-show="b6" x-cloak class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">The Pom badge POMPOMMM</p>
-            <?php } ?>
-            
-        </div>
-    </div>
-    <div class="container mx-auto text-almostblack">
-        <div class="bg-white dark:bg-darkslate p-8 rounded-lg shadow-md ">
-            <div class="flex items-center justify-between pb-2">
-                <h3 class="text-lg font-semibold text-almostblack dark:text-lightgray">Leaderboard</h3><?php if($verified !== 1) {echo '<a href="support.php#faq" class="text-base font-semibold text-right text-coral">Not on the leaderboard?</a>';} ?>
-            </div>
-            <table class="min-w-full table-auto text-left dark:text-lightgray">
-                <thead class="">
-                    <tr>
-                        <th class="px-2 py-2 w-1/6">Rank</th>
-                        <th class="px-2 py-2 w-2/6">Username</th>
-                        <th class="px-2 py-2 w-1/6">Shots</th>
-                        <th class="px-2 py-2 w-1/6">%</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-lightgray dark:bg-almostblack">
-                    <?php if (!empty($leaderboard)): ?>
-                        <?php foreach ($leaderboard as $index => $user): ?>
-=======
             <div class="container mx-auto text-almostblack">
                 <div class="bg-white dark:bg-darkslate p-8 rounded-lg shadow-md ">
                     <div class="flex items-center justify-between pb-2">
@@ -549,7 +496,6 @@ if ($streak >= 3) {
                     </div>
                     <table class="min-w-full table-auto text-left dark:text-lightgray">
                         <thead class="">
->>>>>>> Stashed changes
                             <tr>
                                 <th class="px-2 py-2 w-1/6">Rank</th>
                                 <th class="px-2 py-2 w-2/6">Username</th>
@@ -622,9 +568,11 @@ if ($streak >= 3) {
             document.getElementById('add-to').classList.remove('hidden')
         }
     </script>
+
     <footer class="bg-lightgray py-8 text-almostblack dark:text-lightgray dark:bg-almostblack static bottom-0 left-0 w-full">
         <p class="text-sm text-center">© <?php echo date("Y") ?> Shotstreak. All rights reserved.</p>
     </footer>
+
     <!-- Share Script -->
     <script>
         function shareProfile() {
@@ -643,7 +591,8 @@ if ($streak >= 3) {
             }
         }
     </script>
-    <!-- Chart.js -->
+
+    <!-- Chart.js Script -->
     <script>
         const ctx = document.getElementById('progressChart').getContext('2d');
         const progressChart = new Chart(ctx, {
@@ -669,6 +618,9 @@ if ($streak >= 3) {
                 }
             }
         });
+
+
+
         const ctx2 = document.getElementById('progressChart2').getContext('2d');
         const progressChart2 = new Chart(ctx2, {
             type: 'line',
@@ -693,6 +645,8 @@ if ($streak >= 3) {
                 }
             }
         });
+
+
         const ctx3 = document.getElementById('progressChart3').getContext('2d');
         const progressChart3 = new Chart(ctx3, {
             type: 'line',
@@ -717,6 +671,7 @@ if ($streak >= 3) {
                 }
             }
         });
+
         function aupdate() {
             if (time == 1) {
                 document.getElementById('pc1').style.display = 'block';
@@ -737,8 +692,10 @@ if ($streak >= 3) {
                 document.getElementById('pc2').style.display = 'none';
                 document.getElementById('pc3').style.display = 'block';
                 document.getElementById('btn-label').innerHTML = '90 Days'
-                }
+            }
         }
+
+
     </script>
     <script>
         function update() {
@@ -746,8 +703,30 @@ if ($streak >= 3) {
             document.getElementById('progressBar').style.width = `${progress}%`;
         }
         update();
+
     </script>
-    <script src="scripts/darkmode.js"></script>
+    <script>
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (htmlElement.classList.contains('dark')) {
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                htmlElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // Check local storage for theme preference on page load
+        if (localStorage.getItem('theme') === 'dark') {
+            htmlElement.classList.add('dark');
+        }
+    </script>
+
+
+
 </body>
 
 </html>
