@@ -4,21 +4,20 @@ function autoLogin($con) {
     if (isset($_COOKIE['remember_me'])) {
         $token = $_COOKIE['remember_me'];
 
-        // Query to find the user with this token
+        // Find user
         $stmt = $con->prepare("SELECT id, user_type, username FROM accounts WHERE remember_token = ? AND remember_expiration > NOW()");
         $stmt->bind_param("s", $token);
         $stmt->execute();
         $stmt->bind_result($id, $type, $usern);
 
         if ($stmt->fetch()) {
-            // Log in the user by setting the session
-            
-            // Optionally, regenerate session ID for security
+            // log in
             session_regenerate_id();
             $_SESSION['loggedin'] = TRUE;
             $_SESSION['name'] = $usern;
             $_SESSION['id'] = $id;
 
+            // different user types types
             if ($type === 'user') {
                 
                 $_SESSION['type'] = $type;
@@ -38,7 +37,7 @@ function autoLogin($con) {
                 echo "<script>window.location.href = 'player_dashboard.php'</script>";
             }
         } else {
-            // Token is invalid or expired, remove the cookie
+            // Token is invalid
             setcookie('remember_me', '', time() - 3600, '/'); // Delete the cookie
         }
     }

@@ -7,30 +7,28 @@ if (isset($_POST['email'])) {
     $email = $_POST['email'];
     $token = bin2hex(random_bytes(50)); // Generate random token
     $expires = date("Y-m-d H:i:s", strtotime('+1 hour')); // Token valid for 1 hour
-    
-    // Check if the email exists in the users table
+
+    // Check if the email exists
     $query = "SELECT * FROM accounts WHERE email = ?";
     $stmt = $conn->prepare(query: $query);
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();
-    
+
     if ($result->num_rows > 0) {
-        // Update the user table with the reset token and expiration date
+        // update reset token and expiration date
         $update = "UPDATE accounts SET reset_token = ?, token_expiration = ? WHERE email = ?";
         $stmt = $conn->prepare($update);
         $stmt->bind_param("sss", $token, $expires, $email);
         $stmt->execute();
-        
+
 
         $headers = "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
         $headers .= "From: Shotstreak <shotstreak@shotstreak.ca> \r\n";
-
-
-        // Send reset email (Example)
         $reset_link = "https://localhost/shotstreak/reset_password.php?token=$token";
 
+        // email
         $message = "
         <!DOCTYPE html>
         <html lang='en'>
@@ -88,8 +86,6 @@ if (isset($_POST['email'])) {
                     font-size: 12px;
                     margin-top: 20px;
                 }
-
-                
             </style>
         </head>
         <body>
@@ -117,11 +113,9 @@ if (isset($_POST['email'])) {
         </html>
 
         ";
-
         mail($email, "Shotstreak Password Reset", $message, $headers);
-        
         header("Location: success.php?b=reset.php");
-        
+
     } else {
         header("Location: error.php?a=User Not Found&b=login.php");
         exit();

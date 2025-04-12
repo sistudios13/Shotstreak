@@ -1,8 +1,5 @@
 <?php
-// Start the session and connect to the database
-// We need to use sessions, so you should always start sessions using the below code.
 session_start();
-// If the user is not logged in redirect to the login page...
 if (!isset($_SESSION['loggedin'])) {
 	header('Location: index.php');
 	exit;
@@ -13,10 +10,10 @@ if ($_SESSION['type'] != 'user') {
 }
 require 'db/db_connect.php';
 $conn = $con;
-// Get the user ID from the URL
+// user ID from the URL
 $user_id = $_GET['user_id'];
 
-// Fetch user data from the database
+// user data from the database
 $query = "SELECT username FROM accounts WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
@@ -30,7 +27,7 @@ if (!isset($user)) {
 
 
 
-// Fetch quick stats
+// quick stats
 $sql_stats = "SELECT SUM(shots_made) AS total_shots, 
 			  SUM(shots_taken) AS total_taken,
                
@@ -65,12 +62,9 @@ if ($stats_data['total_taken'] == 0) {
         $badge2 = true;
     }
 }
-
 if ($stats_data['total_shots'] >= 1000) {
     $badge3 = true;
 }
-
-
 if ($stats_data['total_taken'] == 0) {
     $badge5 = false;
 } else {
@@ -79,14 +73,14 @@ if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
 }
 }
 
+<<<<<<< Updated upstream
 
 if($user_id == 47) {
     $pom = true;
 }
+=======
+>>>>>>> Stashed changes
 ?>
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -140,7 +134,6 @@ if($user_id == 47) {
     <div class="container mx-auto px-6 py-12 ">
         <div class="max-w-4xl mx-auto bg-white dark:bg-darkslate p-8 rounded-lg shadow-lg">
             <div class="flex items-center">
-                
                 <div>
                     <h2 class="text-3xl font-bold text-coral"><?php echo htmlspecialchars($user['username']); ?></h2>
                 </div>
@@ -200,24 +193,6 @@ if($user_id == 47) {
     <footer class="bg-lightgray py-8 text-almostblack dark:text-lightgray dark:bg-almostblack static bottom-0 left-0 w-full">
           <p class="text-sm text-center">© <?php echo date("Y") ?> Shotstreak. All rights reserved.</p>
     </footer>
-    <script>
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
-
-        themeToggleBtn.addEventListener('click', () => {
-            if (htmlElement.classList.contains('dark')) {
-            htmlElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-            } else {
-            htmlElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-            }
-        });
-
-        // Check local storage for theme preference on page load
-        if (localStorage.getItem('theme') === 'dark') {
-            htmlElement.classList.add('dark');
-        }
-    </script>
+    <script src="scripts/darkmode.js"></script>
 </body>
 </html>

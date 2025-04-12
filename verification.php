@@ -1,14 +1,13 @@
 <?php
 session_start();
-
 if (!isset($_SESSION['loggedin'])) {
-	header('Location: index.php');
-	exit;
+    header('Location: index.php');
+    exit;
 }
 
 if ($_SESSION['type'] != 'user') {
-	header('Location: index.php');
-	exit;
+    header('Location: index.php');
+    exit;
 }
 
 require 'db/db_connect.php';
@@ -29,18 +28,18 @@ if ($verified == 0) {
     $stmt->execute();
     $result = $stmt->get_result();
     $assoc = $result->fetch_assoc();
-    
+
     if ($result->num_rows > 0) {
         $token = $assoc['verification'];
         $email = $assoc['email'];
-        
+
 
         $headers = "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
         $headers .= "From: Shotstreak <shotstreak@shotstreak.ca> \r\n";
 
 
-        // Send verification email
+        // email
         $verify_link = "https://localhost/shotstreak/verify_email.php?token=$token";
 
         $message = "
@@ -131,17 +130,15 @@ if ($verified == 0) {
         ";
 
         mail($email, "Shotstreak Email Verification", $message, $headers);
-        
+
         header("Location: verify.php");
         exit();
-        
+
     } else {
         header("Location: error.php?a=An error occurred&b=profile.php");
         exit();
     }
-}
-
-else {
+} else {
     header("Location: index.php");
     exit();
 }

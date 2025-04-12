@@ -1,7 +1,5 @@
 <?php
-// We need to use sessions, so you should always start sessions using the below code.
 session_start();
-// If the user is not logged in redirect to the login page...
 if (!isset($_SESSION['loggedin'])) {
 	header('Location: index.php');
 	exit;
@@ -38,7 +36,6 @@ $today_shots_taken = $shots['shots_taken'];
 
 $added_taken = $today_shots_taken + $_POST['shotstaken'];
 $added_made = $today_shots_made + $_POST['shotsmade'];
-// Insert or update the shots data for the user
 if (!is_null($today_shots_made)){ //DUP
 	$query = "UPDATE shots SET shots_taken = ?, shots_made = ?
             WHERE player_id = ? AND shot_date = CURDATE()";

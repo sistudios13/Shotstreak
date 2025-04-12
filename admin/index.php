@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $username = $_POST["username"];
     $password = $_POST["password"];
 
-    // Check username and verify password
+    // Check username and pass
     if ($username === ADMIN_USERNAME && password_verify($password, ADMIN_HASHED_PASSWORD)) {
         $_SESSION["admin_logged_in"] = true;
         header("Location: dashboard.php");
@@ -21,6 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -34,9 +35,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta name="apple-mobile-web-app-title" content="Shotstreak Admin" />
     <link rel="manifest" href="site.webmanifest" />
 </head>
+
 <body class="p-1">
     <h2 class="text-2xl font-bold pb-2">Admin Login</h2>
-    <?php if (isset($error)) echo "<p style='color:red;'>$error</p>"; ?>
+    <?php if (isset($error))
+        echo "<p style='color:red;'>$error</p>"; ?>
     <form method="POST" class="flex flex-col gap-2">
         <div>
             <label>Username:</label>
@@ -49,4 +52,5 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <div><button type="submit" class="border-2 border-black p-1 m-1">Login</button></div>
     </form>
 </body>
+
 </html>

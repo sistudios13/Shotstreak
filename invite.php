@@ -3,21 +3,20 @@
 session_start();
 // If the user is not logged in redirect to the login page...
 if (!isset($_SESSION['loggedin'])) {
-	header('Location: index.php');
-	exit;
+    header('Location: index.php');
+    exit;
 }
 
 if ($_SESSION['type'] != 'coach') {
-	header('Location: index.php');
-	exit;
+    header('Location: index.php');
+    exit;
 }
 
 require 'db/db_connect.php';
 $conn = $con;
 
 
-// Assuming coach is logged in and has a session
-$coach_id = $_SESSION['coach_id']; // Coach's user ID
+$coach_id = $_SESSION['coach_id'];
 $coach_name = $_SESSION['name'];
 
 if (!filter_var($_POST['player_email'], FILTER_VALIDATE_EMAIL)) {
@@ -25,14 +24,13 @@ if (!filter_var($_POST['player_email'], FILTER_VALIDATE_EMAIL)) {
 }
 
 if (strlen($_POST['player_name']) > 20 || strlen($_POST['player_name']) < 2) {
-	exit('Username must be between 2 and 50 characters long!');
+    exit('Username must be between 2 and 50 characters long!');
 }
 
 if (strlen($_POST['player_email']) > 200) {
-	exit('Email must be less than 200 characters long!');
+    exit('Email must be less than 200 characters long!');
 }
 
-// Always set content-type when sending HTML email
 $headers = "MIME-Version: 1.0" . "\r\n";
 $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
 $headers .= "From: Shotstreak <shotstreak@shotstreak.ca> \r\n";
@@ -41,17 +39,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $player_email = $_POST['player_email'];
     $player_name = $_POST['player_name'];
 
-    // Generate a random token for the invitation link
     $token = bin2hex(random_bytes(16));
 
-    // Insert the invitation into the database
+    // invitation into database
     $query = "INSERT INTO invitations (coach_id, player_name, player_email, token) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("isss", $coach_id, $player_name, $player_email, $token);
     if ($stmt->execute()) {
-        // Send an email with the invitation link (Pseudo-code)
         $invite_link = "https://localhost/shotstreak/acceptinvite.php?token=" . $token;
-
+        // email
         $message = "
         <!DOCTYPE html>
         <html lang='en'>
@@ -109,8 +105,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     font-size: 12px;
                     margin-top: 20px;
                 }
-
-                
             </style>
         </head>
         <body>
@@ -144,16 +138,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (mail($player_email, "You've been invited to join Shotstreak!", $message, $headers)) {
             header("Location: coach_dashboard.php");
-        }
-        else {
+        } else {
             header('Location: error.php?a=Email failed to send&b=inviteplayer.php');
             exit();
         }
 
-        
     } else {
         header('Location: error.php?a=An error occurred&b=coach_dashboard.php');
-            exit();
+        exit();
     }
 }
 ?>

@@ -2,10 +2,10 @@
 require 'db/db_connect.php';
 $conn = $con;
 error_reporting(0);
-// Get the user ID from the URL
+// user ID from the URL
 $user_id = $_GET['user_id'];
 
-// Fetch user data from the database
+// user data from the database
 $query = "SELECT username FROM accounts WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
@@ -19,7 +19,7 @@ if (!isset($user)) {
 
 
 
-// Fetch quick stats
+// quick stats
 $sql_stats = "SELECT SUM(shots_made) AS total_shots, 
 			  SUM(shots_taken) AS total_taken,
                
@@ -49,7 +49,7 @@ if ($stats_data['total_taken'] >= 500) {
 if ($stats_data['total_taken'] == 0) {
     $badge2 = false;
 } else {
-    if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 40 ) {
+    if (($stats_data['total_shots'] / $stats_data['total_taken']) * 100 >= 40) {
         $badge2 = true;
     }
 }
@@ -62,18 +62,17 @@ if ($stats_data['total_shots'] >= 1000) {
 if ($stats_data['total_taken'] == 0) {
     $badge5 = false;
 } else {
-if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
-    $badge5 = true;
+    if (($stats_data['total_shots'] / $stats_data['total_taken']) * 100 >= 70) {
+        $badge5 = true;
+    }
 }
-}
+
 ?>
-
-
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Profile - Shotstreak</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -85,8 +84,10 @@ if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
     <link rel="shortcut icon" href="assets/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Shotstreak" />
-    <link rel="manifest" href="assets/site.webmanifest" /></head>
+    <link rel="manifest" href="assets/site.webmanifest" />
 </head>
+</head>
+
 <body class="bg-lightgray dark:bg-almostblack text-almostblack dark:text-lightgray">
     <!-- Navbar -->
     <nav id="test" class="bg-white dark:bg-darkslate shadow-md py-2 md:py-4">
@@ -101,7 +102,7 @@ if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
         </div>
     </nav>
     <div class="container mx-auto px-6 py-12 ">
-        <?php if($exists): ?>
+        <?php if ($exists): ?>
             <div class="max-w-4xl mx-auto bg-white dark:bg-darkslate p-8 rounded-lg shadow-lg">
                 <div class="flex items-center">
                     <div>
@@ -128,29 +129,39 @@ if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
                 <div class="mt-8 ">
                     <h3 class="text-2xl font-bold text-coral-red">Achievements</h3>
                     <div class="relative grid grid-cols-6 mt-2 lg:grid-cols-10" x-data="{b1 : false, b2 : false, b3 : false, b4: false, b5 : false}">
-                
-                <div class=" <?php if(!$badge1) { echo 'hidden'; }?> ">
-                    <img x-on:click="b1 = !b1" @click.away="b1 = false" class="h-16 cursor-pointer" src="assets/icebreaker.svg" alt="badge1">    
-                </div>
 
-                <div class=" <?php if(!$badge2) { echo 'hidden'; }?> ">
-                    <img x-on:click="b2 = !b2" @click.away="b2 = false" class="h-16 cursor-pointer" src="assets/precision.svg" alt="badge2">
-                </div>
-                <div class=" <?php if(!$badge3) { echo 'hidden'; }?> ">
-                    <img x-on:click="b3 = !b3" @click.away="b3 = false" class="h-16 cursor-pointer" src="assets/millenium.svg" alt="badge3">
-                </div>
-                <div class=" <?php if(!$badge4) { echo 'hidden'; }?> ">
-                    <img x-on:click="b4 = !b4" @click.away="b4 = false" class="h-16 cursor-pointer" src="assets/crusher.svg" alt="badge4">
-                </div>
-                <div class=" <?php if(!$badge5) { echo 'hidden'; }?> ">
-                    <img x-on:click="b5 = !b5" @click.away="b5 = false" class="h-16 cursor-pointer" src="assets/pinpoint.svg" alt="badge5">
-                </div>
-                <p x-show="b1" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Icebreaker: Take a total of over 500 shots</p>
-                <p x-show="b2" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Precision Shooter: Maintain a total average of over 40%</p>
-                <p x-show="b3" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Millenium Marksman: Make a total of over 1000 shots</p>
-                <p x-show="b4" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">On a Roll: Maintain a total streak over 3 days long. Keep it up!</p>
-                <p x-show="b5" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Pinpoint Shooter: Maintain a total average of over 70%</p>
-            </div>
+                        <div class=" <?php if (!$badge1) {
+                            echo 'hidden';
+                        } ?> ">
+                            <img x-on:click="b1 = !b1" @click.away="b1 = false" class="h-16 cursor-pointer" src="assets/icebreaker.svg" alt="badge1">
+                        </div>
+
+                        <div class=" <?php if (!$badge2) {
+                            echo 'hidden';
+                        } ?> ">
+                            <img x-on:click="b2 = !b2" @click.away="b2 = false" class="h-16 cursor-pointer" src="assets/precision.svg" alt="badge2">
+                        </div>
+                        <div class=" <?php if (!$badge3) {
+                            echo 'hidden';
+                        } ?> ">
+                            <img x-on:click="b3 = !b3" @click.away="b3 = false" class="h-16 cursor-pointer" src="assets/millenium.svg" alt="badge3">
+                        </div>
+                        <div class=" <?php if (!$badge4) {
+                            echo 'hidden';
+                        } ?> ">
+                            <img x-on:click="b4 = !b4" @click.away="b4 = false" class="h-16 cursor-pointer" src="assets/crusher.svg" alt="badge4">
+                        </div>
+                        <div class=" <?php if (!$badge5) {
+                            echo 'hidden';
+                        } ?> ">
+                            <img x-on:click="b5 = !b5" @click.away="b5 = false" class="h-16 cursor-pointer" src="assets/pinpoint.svg" alt="badge5">
+                        </div>
+                        <p x-show="b1" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Icebreaker: Take a total of over 500 shots</p>
+                        <p x-show="b2" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Precision Shooter: Maintain a total average of over 40%</p>
+                        <p x-show="b3" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Millenium Marksman: Make a total of over 1000 shots</p>
+                        <p x-show="b4" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">On a Roll: Maintain a total streak over 3 days long. Keep it up!</p>
+                        <p x-show="b5" class="absolute w-60 bg-white dark:bg-darkslate text-almostblack dark:text-lightgray top-16 p-3 rounded-lg shadow-md">Pinpoint Shooter: Maintain a total average of over 70%</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -158,9 +169,10 @@ if (($stats_data['total_shots'] / $stats_data['total_taken']) *100 >= 70 ) {
         <div class="flex justify-center text-xl font-bold">
             User Not Found!
         </div>
-    <?php endif;?>
+    <?php endif; ?>
     <footer class="bg-lightgray py-8 text-almostblack dark:text-lightgray dark:bg-almostblack static bottom-0 left-0 w-full">
-          <p class="text-sm text-center">© <?php echo date("Y") ?> Shotstreak. All rights reserved.</p>
+        <p class="text-sm text-center">© <?php echo date("Y") ?> Shotstreak. All rights reserved.</p>
     </footer>
 </body>
+
 </html>

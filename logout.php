@@ -8,5 +8,5 @@ $stmt = $con->prepare("UPDATE accounts SET remember_token = NULL, remember_expir
 $stmt->bind_param("i", $_SESSION['id']);
 $stmt->execute();
 session_destroy();
-// Redirect to the login page:
+
 header('Location: index.php');

@@ -3,9 +3,8 @@
 require 'db/db_connect.php';
 $conn = $con;
 
-// reset_password.php
 if (isset($_POST['password'], $_POST['token'])) {
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash the new password
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); 
     $token = $_POST['token'];
     
     // Check if the token is valid and not expired
@@ -16,7 +15,6 @@ if (isset($_POST['password'], $_POST['token'])) {
     $result = $stmt->get_result();
     
     if ($result->num_rows > 0) {
-        // Update the user's password
         $update = "UPDATE accounts SET password = ?, reset_token = NULL, token_expiration = NULL WHERE reset_token = ?";
         $stmt = $conn->prepare($update);
         $stmt->bind_param("ss", $password, $token);
