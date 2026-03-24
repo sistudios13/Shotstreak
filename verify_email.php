@@ -18,6 +18,7 @@ if (isset($_GET['token'])) {
     
     $token = $_GET['token'];
     
+    // Check if the token is valid
     $query = "SELECT * FROM accounts WHERE verification = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $token);
@@ -25,7 +26,7 @@ if (isset($_GET['token'])) {
     $result = $stmt->get_result();
     
     if ($result->num_rows > 0) {
-        // Update
+        // Update the user's password
         $update = "UPDATE accounts SET verified = 1 WHERE verification = ?";
         $stmt = $conn->prepare($update);
         $stmt->bind_param("s", $token);

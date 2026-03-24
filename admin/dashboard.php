@@ -35,8 +35,7 @@ $taken = $sh['total'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="tailwindextras.js"></script>
+    <link rel="stylesheet" href="../app.css">
     <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
     <link rel="shortcut icon" href="favicon.ico" />

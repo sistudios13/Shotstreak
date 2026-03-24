@@ -1,13 +1,14 @@
 <?php
 session_start();
+
 if (!isset($_SESSION['loggedin'])) {
-    header('Location: index.php');
-    exit;
+	header('Location: index.php');
+	exit;
 }
 
 if ($_SESSION['type'] != 'user') {
-    header('Location: index.php');
-    exit;
+	header('Location: index.php');
+	exit;
 }
 
 require 'db/db_connect.php';
@@ -28,18 +29,18 @@ if ($verified == 0) {
     $stmt->execute();
     $result = $stmt->get_result();
     $assoc = $result->fetch_assoc();
-
+    
     if ($result->num_rows > 0) {
         $token = $assoc['verification'];
         $email = $assoc['email'];
-
+        
 
         $headers = "MIME-Version: 1.0" . "\r\n";
         $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
         $headers .= "From: Shotstreak <shotstreak@shotstreak.ca> \r\n";
 
 
-        // email
+        // Send verification email
         $verify_link = "https://localhost/shotstreak/verify_email.php?token=$token";
 
         $message = "
@@ -108,7 +109,7 @@ if ($verified == 0) {
         <div class='email-container'>
             <div class='email-header'>
                 <h1>Verify Your Shotstreak Account Email</h1>
-                <img title='logo' src='https://shotstreak.simonsites.com/assets/isoLogo.svg' alt='Logo' height='200' width='200'>
+                <img title='logo' src='https://shotstreak.ca/assets/isoLogo.svg' alt='Logo' height='200' width='200'>
             </div>
             
             <div class='email-body'>
@@ -130,15 +131,17 @@ if ($verified == 0) {
         ";
 
         mail($email, "Shotstreak Email Verification", $message, $headers);
-
+        
         header("Location: verify.php");
         exit();
-
+        
     } else {
         header("Location: error.php?a=An error occurred&b=profile.php");
         exit();
     }
-} else {
+}
+
+else {
     header("Location: index.php");
     exit();
 }

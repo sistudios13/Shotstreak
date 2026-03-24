@@ -1,5 +1,8 @@
 <?php
+// Start the session and connect to the database
+// We need to use sessions, so you should always start sessions using the below code.
 session_start();
+// If the user is not logged in redirect to the login page...
 if (!isset($_SESSION['loggedin'])) {
 	header('Location: index.php');
 	exit;
@@ -10,10 +13,10 @@ if ($_SESSION['type'] != 'user') {
 }
 require 'db/db_connect.php';
 $conn = $con;
-// user ID from the URL
+// Get the user ID from the URL
 $user_id = $_GET['user_id'];
 
-// user data from the database
+// Fetch user data from the database
 $query = "SELECT username FROM accounts WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
@@ -27,7 +30,7 @@ if (!isset($user)) {
 
 
 
-// quick stats
+// Fetch quick stats
 $sql_stats = "SELECT SUM(shots_made) AS total_shots, 
 			  SUM(shots_taken) AS total_taken,
                
@@ -62,9 +65,12 @@ if ($stats_data['total_taken'] == 0) {
         $badge2 = true;
     }
 }
+
 if ($stats_data['total_shots'] >= 1000) {
     $badge3 = true;
 }
+
+
 if ($stats_data['total_taken'] == 0) {
     $badge5 = false;
 } else {
@@ -78,15 +84,16 @@ if($user_id == 47) {
     $pom = true;
 }
 ?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Profile - Shotstreak</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="tailwindextras.js"></script>
-    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="app.css">
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="icon" type="image/png" href="assets/favicon-48x48.png" sizes="48x48" />
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
@@ -94,11 +101,6 @@ if($user_id == 47) {
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Shotstreak" />
     <link rel="manifest" href="assets/site.webmanifest" /></head>
-    <style>
-        [x-cloak] {
-            display: none !important;
-        }
-    </style>
 </head>
 <body class="bg-lightgray dark:bg-almostblack text-almostblack dark:text-lightgray">
     <!-- Navbar -->
@@ -131,6 +133,7 @@ if($user_id == 47) {
     <div class="container mx-auto px-6 py-12 ">
         <div class="max-w-4xl mx-auto bg-white dark:bg-darkslate p-8 rounded-lg shadow-lg">
             <div class="flex items-center">
+                
                 <div>
                     <h2 class="text-3xl font-bold text-coral"><?php echo htmlspecialchars($user['username']); ?></h2>
                 </div>
@@ -190,6 +193,24 @@ if($user_id == 47) {
     <footer class="bg-lightgray py-8 text-almostblack dark:text-lightgray dark:bg-almostblack static bottom-0 left-0 w-full">
           <p class="text-sm text-center">© <?php echo date("Y") ?> Shotstreak. All rights reserved.</p>
     </footer>
-    <script src="scripts/darkmode.js"></script>
+    <script>
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (htmlElement.classList.contains('dark')) {
+            htmlElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+            } else {
+            htmlElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // Check local storage for theme preference on page load
+        if (localStorage.getItem('theme') === 'dark') {
+            htmlElement.classList.add('dark');
+        }
+    </script>
 </body>
 </html>
