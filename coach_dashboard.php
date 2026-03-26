@@ -19,7 +19,7 @@ $user_id = $_SESSION['id'];
 $coach_name = $_SESSION['name'];
 $email = $_SESSION['email'];
 
-$tmn = $con->prepare("SELECT team_name, coach_id, goal FROM coaches WHERE email = ?");
+$tmn = $con->prepare("SELECT team_name, coach_id, goal, goal_type FROM coaches WHERE email = ?");
 $tmn->bind_param('s', $email);
 $tmn->execute();
 $tmnres = $tmn->get_result();
@@ -28,6 +28,7 @@ $tmninfo = $tmnres->fetch_assoc();
 $team_name = $tmninfo["team_name"];
 $coach_id = $tmninfo["coach_id"];
 $goal = $tmninfo["goal"];
+$goal_type = $tmninfo["goal_type"];
 
 session_regenerate_id();
 $_SESSION['coach_id'] = $coach_id;
@@ -185,7 +186,7 @@ $stmt2->close();
                 <div>
                     <h3 class="text-lg font-semibold text-almostblack dark:text-lightgray mb-4">Team Goal</h3>
                     <h3 class="text-2xl font-bold text-coral mb-4"><?php echo $goal; ?></h3>
-                    <p class="text-almostblack dark:text-lightgray">Each player needs to take <b class="text-coral"><?php echo $goal; ?></b> shots per day</p>
+                    <p class="text-almostblack dark:text-lightgray">Each player needs to <u><?php echo $goal_type == 'take' ? 'take' : 'make'; ?></u> <b class="text-coral"><?php echo $goal; ?></b> shots per day</p>
                 </div>
                 <a href="c_changegoal.php"><button class="mt-3 text-coral bg-coral font-bold p-1 px-1.5 md:px-5 md:py-3 w-fit mx-auto border-2 border-coral md:hover:bg-white md:hover:text-coral dark:md:hover:bg-darkslate text-white transition-colors rounded-md ">Change Shot Goal</button></a>
 
@@ -239,6 +240,7 @@ $stmt2->close();
                             $shooting_percentage = 0;
                         }
 
+                        
                         // Output the player's data in a table row
                         echo "<tr class='border-b border-lightgray dark:border-almostblack dark:bg-darkslate dark:text-lightgray bg-white dark:hover:bg-almostblack hover:bg-lightgray'>";
                         echo "<td class='py-3 px-6 text-left break-all'>$player_name</td>";
@@ -248,6 +250,10 @@ $stmt2->close();
 
                         // Close statement
                         $stmt->close();
+                    }
+
+                    if (count($players) == 0) {
+                        echo "<tr><td colspan='3' class='text-center py-4 text-almostblack dark:text-lightgray'>No players added yet. Invite players to see them here!</td></tr>";
                     }
 
                     // Close the connection
@@ -301,6 +307,10 @@ $stmt2->close();
 
                         // Close statement
                     
+                    }
+
+                    if (count($invites) == 0) {
+                        echo "<tr><td colspan='3' class='text-center py-4 text-almostblack dark:text-lightgray'>No pending invites</td></tr>";
                     }
 
                     // Close the connection

@@ -12,11 +12,14 @@ if ($_SESSION['type'] != 'coach') {
 }
 require 'db/db_connect.php';
 
-$tmn = $con->prepare('SELECT team_name FROM coaches WHERE email = ?');
+$tmn = $con->prepare('SELECT team_name, goal, goal_type FROM coaches WHERE email = ?');
 $tmn->bind_param('s', $_SESSION['email']);
 $tmn->execute();
 $a = $tmn->get_result();
-$team_name = $a->fetch_assoc()['team_name'];
+$b = $a->fetch_assoc();
+$team_name = $b['team_name'];
+$goal = $b['goal'];
+$goal_type = $b['goal_type'];
 
 ?>
 
@@ -87,10 +90,6 @@ $team_name = $a->fetch_assoc()['team_name'];
                         <p class="text-lg font-bold text-coral">Email:</p>
                         <p class="text-almostblack dark:text-lightgray "><?=htmlspecialchars($_SESSION['email'], ENT_QUOTES)?></p>
                     </div>
-                    <div>
-                        <p class="text-lg font-bold text-coral">Team Name:</p>
-                        <p class="text-almostblack dark:text-lightgray "><?=htmlspecialchars($team_name, ENT_QUOTES)?></p>
-                    </div>
                     
 
                     <div class="flex gap-2">
@@ -128,9 +127,38 @@ $team_name = $a->fetch_assoc()['team_name'];
                     <a @click="de = !de" class=" select-none dark:text-lightgray h-[32px] pt-1 text-almostblack font-semibold cursor-pointer">Delete Account</a>
                     <form action="delete_account.php"  method="POST" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')" x-show="de" x-collapse>
                         <input type="hidden" name="user_type" value="<?php echo $_SESSION["type"]; ?>"> <!-- 'coach', 'player', or 'user' -->
-                        <button type="submit" class="bg-red-600 text-white p-1 px-2 rounded">Delete Account</button>
+                        <button type="submit" class="bg-red-600 text-white p-1 px-2 rounded">Confirm?</button>
                     </form>
                 </div>
+            </div>
+
+            <div class="bg-white dark:bg-darkslate p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold text-almostblack  dark:text-lightgray mb-4">Team Information</h3>
+                <div class="flex flex-col gap-3">
+                    <div>
+                        <p class="text-lg font-bold text-coral">Team Name:</p>
+                        <p class="text-almostblack dark:text-lightgray "><?=htmlspecialchars($team_name, ENT_QUOTES)?></p>
+                    </div>
+                    <div>
+                        <p class="text-lg font-bold text-coral">Daily Shot Goal</p>
+                        <p class="text-almostblack dark:text-lightgray "><?=htmlspecialchars($goal, ENT_QUOTES)?> (Change this <a href="c_changegoal.php" class="text-coral font-bold">here</a>)</p>
+                    </div>
+                    <div>
+                        <p class="text-lg font-bold text-coral">Goal Type</p>
+                        <form action="c_changetype.php" method="POST" class="flex flex-col gap-3 mt-3">
+                            <div class="flex gap-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="goal_type" value="make" <?php echo $goal_type === 'make' ? 'checked' : ''; ?> class="w-4 h-4 accent-coral">
+                                    <span class="text-almostblack dark:text-lightgray font-medium">Shots Made</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="goal_type" value="take" <?php echo $goal_type === 'take' ? 'checked' : ''; ?> class="w-4 h-4 accent-coral">
+                                    <span class="text-almostblack dark:text-lightgray font-medium">Shots Taken</span>
+                                </label>
+                            </div>
+                            <button type="submit" class="bg-coral hover:bg-coralhov text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors w-fit">Update Goal Type</button>
+                        </form>
+                    </div>
             </div>
 
             

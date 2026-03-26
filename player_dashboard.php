@@ -45,13 +45,18 @@ $_SESSION['coach_id'] = $coach_id;
 
 // Fetch today's shot goal
 $date_today = date('Y-m-d');
-$sql_today_goal = "SELECT goal FROM coaches WHERE coach_id = ?";
+$sql_today_goal = "SELECT goal, goal_type FROM coaches WHERE coach_id = ?";
 $stmt = $conn->prepare($sql_today_goal);
 $stmt->bind_param("i", $coach_id);
 $stmt->execute();
 $result_today_goal = $stmt->get_result();
-$today_goal = $result_today_goal->fetch_assoc()['goal'] ?? 0;
+$fa = $result_today_goal->fetch_assoc();
+$today_goal = $fa['goal'] ?? 0;
+$goal_type = $fa['goal_type'];
 
+if ($goal_type === null) {
+    header('Location: error.php?a=Your coach has deleted the team&b=delete_account.php');
+}
 
 // Fetch today's shots made
 $sql_today_shots = "SELECT SUM(shots_made) AS total_shots_made FROM shots WHERE player_id = ? AND shot_date = ?";
@@ -68,8 +73,13 @@ $stmt->bind_param("is", $user_id, $date_today);
 $stmt->execute();
 $result_today_shots_taken = $stmt->get_result();
 $today_shots_taken = $result_today_shots_taken->fetch_assoc()['total_shots_taken'] ?? 0;
+
 // Calculate shots remaining
-$shots_remaining = $today_goal - $today_shots_taken;
+if ($goal_type === 'take') {
+    $shots_remaining = $today_goal - $today_shots_taken;
+} else {
+    $shots_remaining = $today_goal - $today_shots_made;
+}
 
 // Fetch data for the progress chart (last 7 days)
 $sql_chart = "SELECT shot_date, shots_made, shots_taken FROM shots 
@@ -132,12 +142,19 @@ $best_day = $result->fetch_assoc()['shooting_percentage'] ?? 0;
 
 
 // Fetch quick stats
-$sql_stats = "SELECT SUM(shots_made) AS total_shots, 
-			  SUM(shots_taken) AS total_taken,
-               
-              SUM(IF(shots_taken >= goal, 1, 0))  AS days_count
+if ($goal_type === 'take') {
+    $sql_stats = "SELECT SUM(shots_made) AS total_shots, 
+              SUM(shots_taken) AS total_taken,
+              SUM(IF(shots_taken >= goal, 1, 0)) AS days_count
               FROM shots 
               WHERE player_id = ?";
+} else {
+    $sql_stats = "SELECT SUM(shots_made) AS total_shots, 
+              SUM(shots_taken) AS total_taken,
+              SUM(IF(shots_made >= goal, 1, 0)) AS days_count
+              FROM shots 
+              WHERE player_id = ?";
+}
 $stmt = $conn->prepare($sql_stats);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -183,7 +200,7 @@ if ($stats_data['total_taken'] == 0) {
 //Streak
 
 // Fetch the user's daily shot records and goal data from the database
-$query = "SELECT shots_taken, shot_date, goal FROM shots WHERE player_id = ? ORDER BY shot_date DESC";
+$query = "SELECT shots_taken, shot_date, goal, goal_type FROM shots WHERE player_id = ? ORDER BY shot_date DESC";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -197,8 +214,10 @@ while ($row = $result->fetch_assoc()) {
     $shots_taken = $row['shots_taken'];
     $shot_date = $row['shot_date'];
     $goal = $row['goal'];
+    $goal_type = $row['goal_type'];
 
     // If the user met their goal on that day
+
     if ($shots_taken >= $goal) {
         // If this is the first day we're checking
         if ($previous_day === null) {
@@ -323,7 +342,7 @@ if ($streak >= 3) {
                 <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:gap-0">
                     <div class="w-full md:w-fit">
                         <p class="text-4xl font-bold text-golden"><?php echo $today_goal; ?></p>
-                        <p class="text-almostblack dark:text-lightgray">Daily Shot Goal</p>
+                        <p class="text-almostblack dark:text-lightgray">Daily Shot Goal (<?php echo $goal_type == 'take' ? 'Shots Taken' : 'Shots Made'; ?>)</p>
                         <hr class="mt-4 border-gray-200 dark:border-almostblack md:hidden">
                     </div>
 
@@ -346,7 +365,7 @@ if ($streak >= 3) {
                     </div>
                 </div>
                 <p class=" text-almostblack dark:text-lightgray">
-                    <?php echo $shots_remaining > 0 ? "You need to take <b class='text-coral'>$shots_remaining</b> more shots to meet your goal!" : "Goal achieved!"; ?>
+                    <?php echo $shots_remaining > 0 ? "You need to " . ($goal_type === 'take' ? 'take' : 'make') . " <b class='text-coral'>$shots_remaining</b> more shots to meet your goal!" : "Goal achieved!"; ?>
                 </p>
 
                 <div class="flex flex-row justify-between mt-auto">
@@ -652,7 +671,7 @@ if ($streak >= 3) {
     </script>
     <script>
         function update() {
-            const progress = Math.min((<?php echo $today_shots_taken ?> / <?php echo $today_goal ?>) * 100, 100).toFixed(2)
+            const progress = Math.min((<?php echo $goal_type === 'take' ? $today_shots_taken : $today_shots_made ?> / <?php echo $today_goal ?>) * 100, 100).toFixed(2)
             document.getElementById('progressBar').style.width = `${progress}%`;
         }
         update();
