@@ -142,19 +142,13 @@ $best_day = $result->fetch_assoc()['shooting_percentage'] ?? 0;
 
 
 // Fetch quick stats
-if ($goal_type === 'take') {
-    $sql_stats = "SELECT SUM(shots_made) AS total_shots, 
+
+$sql_stats = "SELECT SUM(shots_made) AS total_shots, 
               SUM(shots_taken) AS total_taken,
-              SUM(IF(shots_taken >= goal, 1, 0)) AS days_count
+              SUM(IF(goal_type = 'make', IF(shots_made >= goal, 1, 0), IF(shots_taken >= goal, 1, 0))) AS days_count
               FROM shots 
               WHERE player_id = ?";
-} else {
-    $sql_stats = "SELECT SUM(shots_made) AS total_shots, 
-              SUM(shots_taken) AS total_taken,
-              SUM(IF(shots_made >= goal, 1, 0)) AS days_count
-              FROM shots 
-              WHERE player_id = ?";
-}
+
 $stmt = $conn->prepare($sql_stats);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();

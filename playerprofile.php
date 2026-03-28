@@ -63,10 +63,11 @@ $stmt->execute();
 $result = $stmt->get_result();
 $best_day = $result->fetch_assoc()['shooting_percentage'] ?? 0;
 
-$s_sql = "SELECT SUM(shots_made) as total_shots_made, SUM(shots_taken) as total_shots_taken,
-  SUM(IF(shots_taken >= goal, 1, 0))  AS days_count
-FROM shots 
-WHERE player_id = ?";
+$s_sql = "SELECT SUM(shots_made) AS total_shots_made, 
+              SUM(shots_taken) AS total_shots_taken,
+              SUM(IF(goal_type = 'make', IF(shots_made >= goal, 1, 0), IF(shots_taken >= goal, 1, 0))) AS days_count
+              FROM shots 
+              WHERE player_id = ?";
 
 $stmt = $con->prepare($s_sql);
 $stmt->bind_param("i", $player_id);
