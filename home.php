@@ -28,12 +28,14 @@ $verified = $verif->fetch_assoc()['verified'];
 
 // Fetch today's shot goal
 $date_today = date('Y-m-d');
-$sql_today_goal = "SELECT shots_goal FROM user_goals WHERE user_id = ? ";
+$sql_today_goal = "SELECT shots_goal, goal_type FROM user_goals WHERE user_id = ? ";
 $stmt = $conn->prepare($sql_today_goal);
-$stmt->bind_param("i", $user_id,);
+$stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result_today_goal = $stmt->get_result();
-$today_goal = $result_today_goal->fetch_assoc()['shots_goal'] ?? 0;
+$res_fetch = $result_today_goal->fetch_assoc();
+$today_goal = $res_fetch['shots_goal'] ?? 0;
+$goal_type = $res_fetch['goal_type'] ?? 'take';
 
 // Fetch today's shots made
 $sql_today_shots = "SELECT SUM(shots_made) AS total_shots_made FROM user_shots WHERE user_id = ? AND shot_date = ?";
@@ -51,7 +53,11 @@ $stmt->execute();
 $result_today_shots_taken = $stmt->get_result();
 $today_shots_taken = $result_today_shots_taken->fetch_assoc()['total_shots_taken'] ?? 0;
 // Calculate shots remaining
-$shots_remaining = $today_goal - $today_shots_taken;
+if ($goal_type === 'take') {
+    $shots_remaining = $today_goal - $today_shots_taken;
+} else {
+    $shots_remaining = $today_goal - $today_shots_made;
+}
 
 // Fetch data for the progress chart (last 7 days)
 $sql_chart = "SELECT shot_date, shots_made, shots_taken FROM user_shots 
@@ -117,7 +123,7 @@ while ($brow = $bresult_chart->fetch_assoc()) {
 $sql_stats = "SELECT SUM(shots_made) AS total_shots, 
 			  SUM(shots_taken) AS total_taken,
                
-              SUM(IF(shots_taken >= goal, 1, 0))  AS days_count
+              SUM(IF(goal_type = 'make', IF(shots_made >= goal, 1, 0), IF(shots_taken >= goal, 1, 0))) AS days_count
               FROM user_shots 
               WHERE user_id = ?";
 $stmt = $conn->prepare($sql_stats);
@@ -200,7 +206,7 @@ if ($result->num_rows > 0) {
 //Streak
 
 // Fetch the user's daily shot records and goal data from the database
-$query = "SELECT shots_taken, shot_date, goal FROM user_shots WHERE user_id = ? ORDER BY shot_date DESC";
+$query = "SELECT shots_taken, shots_made, shot_date, goal, goal_type FROM user_shots WHERE user_id = ? ORDER BY shot_date DESC";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -212,11 +218,15 @@ $previous_day = null;
 // Check each record to calculate the streak
 while ($row = $result->fetch_assoc()) {
     $shots_taken = $row['shots_taken'];
+    $shots_made = $row['shots_made'];
     $shot_date = $row['shot_date'];
     $goal = $row['goal'];
+    $goal_type = $row['goal_type'];
+
+    $taken_goal_met = ($goal_type === 'take' && $shots_taken >= $goal);
+    $made_goal_met = ($goal_type === 'make' && $shots_made >= $goal);
     
-    // If the user met their goal on that day
-    if ($shots_taken >= $goal) {
+    if ($taken_goal_met || $made_goal_met) {
         // If this is the first day we're checking
         if ($previous_day === null) {
             $streak++;  // Start the streak
@@ -363,7 +373,7 @@ if ($streak >= 3) {
                 <div class="flex flex-col items-start justify-between gap-4 md:flex-row md:gap-0">
                     <div class="w-full md:w-fit">
                         <p class="text-4xl font-bold text-golden"><?php echo $today_goal; ?></p>
-                        <p class="text-almostblack dark:text-lightgray">Daily Shot Goal</p>
+                        <p class="text-almostblack dark:text-lightgray">Daily Shot Goal (<?php echo $goal_type == 'take' ? 'Shots Taken' : 'Shots Made'; ?>)</p>
                         <hr class="mt-4 border-gray-200 dark:border-almostblack md:hidden">
                     </div>
                     
@@ -381,7 +391,7 @@ if ($streak >= 3) {
                 <div class="w-full bg-coral rounded-lg h-6 ring-2 ring-golden">
                     <div style="width: 0;" id="progressBar" class="bg-golden h-6 rounded-lg text-darkslate transition-all duration-700 ease-in-out text-sm text-center font-semibold"></div>
                 </div>
-                <p class=" text-almostblack dark:text-lightgray"><?php echo $shots_remaining > 0 ? "You need to take <b class='text-coral'>$shots_remaining</b> more shots to meet your goal!" : "Goal achieved!"; ?></p>
+                <p class=" text-almostblack dark:text-lightgray"><?php echo $shots_remaining > 0 ? "You need to <u>" . ($goal_type == 'take' ? 'take' : 'make') . "</u> <b class='text-coral'>$shots_remaining</b> more shots to meet your goal!" : "Goal achieved!"; ?></p>
                 
                 <div class="flex flex-row justify-between gap-4 mt-auto">
                     <a href="shotgoal.php"><button class="mt-1 text-coral font-bold p-1 px-1.5 md:px-6 md:py-4 w-fit mx-auto border-2 border-coral md:hover:bg-coral md:hover:text-white transition-colors rounded-md ">Change Goal</button></a>
@@ -707,7 +717,7 @@ if ($streak >= 3) {
     </script>
     <script>
         function update() {
-            const progress = Math.min((<?php echo $today_shots_taken ?> / <?php echo $today_goal ?>) * 100, 100).toFixed(2)
+            const progress = Math.min((<?php echo $goal_type === 'take' ? $today_shots_taken : $today_shots_made ?> / <?php echo $today_goal ?>) * 100, 100).toFixed(2)
             document.getElementById('progressBar').style.width = `${progress}%`;
         }
         update();

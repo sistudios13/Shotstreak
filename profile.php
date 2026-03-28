@@ -1,7 +1,5 @@
 <?php
-// We need to use sessions, so you should always start sessions using the below code.
 session_start();
-// If the user is not logged in redirect to the login page...
 if (!isset($_SESSION['loggedin'])) {
 	header('Location: index.php');
 	exit;
@@ -18,14 +16,21 @@ $veri->execute();
 $verif = $veri->get_result();
 $verified = $verif->fetch_assoc()['verified'];
 
-// We don't have the password or email info stored in sessions, so instead, we can get the results from the database.
-$stmt = $con->prepare('SELECT password, email FROM accounts WHERE id = ?');
-// In this case we can use the account ID to get the account info.
+
+$stmt = $con->prepare('SELECT email FROM accounts WHERE id = ?');
+
 $stmt->bind_param('i', $_SESSION['id']);
 $stmt->execute();
-$stmt->bind_result($password, $email);
+$stmt->bind_result($email);
 $stmt->fetch();
 $stmt->close();
+
+$goal_stmt = $con->prepare('SELECT goal_type FROM user_goals WHERE user_id = ?');
+$goal_stmt->bind_param('i', $_SESSION['id']);
+$goal_stmt->execute();
+$goal_type_result = $goal_stmt->get_result();
+$goal_type_row = $goal_type_result->fetch_assoc();
+$goal_type = $goal_type_row['goal_type'] ?? 'take';
 ?>
 
 
@@ -102,10 +107,7 @@ $stmt->close();
                             }
                         ?>
                         </div>
-                    <div class="pt-2 flex items-center gap-2">
-                        <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ff6f61" d="M64 256l0-96 160 0 0 96L64 256zm0 64l160 0 0 96L64 416l0-96zm224 96l0-96 160 0 0 96-160 0zM448 256l-160 0 0-96 160 0 0 96zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"/></svg>
-                        <a href="export.php" class="py-2 dark:text-lightgray font-semibold">Export All Data</a>
-                    </div>
+                    
 
                     <div class="flex gap-2">
                         <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ff6f61" d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM169.8 165.3c7.9-22.3 29.1-37.3 52.8-37.3l58.3 0c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L280 264.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24l0-13.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1l-58.3 0c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
@@ -147,10 +149,35 @@ $stmt->close();
                 <div x-data="{de: false}" @click.away="de = false" class="pt-4 flex gap-2 items-center">
                     <a @click="de = !de" class=" select-none dark:text-lightgray h-[32px] pt-1 text-almostblack font-semibold cursor-pointer">Delete Account</a>
                     <form action="delete_account.php"  method="POST" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')" x-show="de" x-collapse>
-                        <input type="hidden" name="user_type" value="<?php echo $_SESSION["type"]; ?>"> <!-- 'coach', 'player', or 'user' -->
-                        <button type="submit" class="bg-red-600 text-white p-1 px-2 rounded">Delete Account</button>
+                        <input type="hidden" name="user_type" value="<?php echo $_SESSION["type"]; ?>">
+                        <button type="submit" class="bg-red-600 text-white p-1 px-2 rounded">Confirm?</button>
                     </form>
                 </div>
+            </div>
+
+             <div class="bg-white dark:bg-darkslate p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold text-almostblack  dark:text-lightgray mb-4">Settings</h3>
+                <div class="flex flex-col gap-3">
+                    <div>
+                        <p class="text-lg font-bold text-coral">Goal Type</p>
+                        <form action="changetype.php" method="POST" class="flex flex-col gap-3 mt-3">
+                            <div class="flex gap-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="goal_type" value="make" <?php echo $goal_type === 'make' ? 'checked' : ''; ?> class="w-4 h-4 accent-coral">
+                                    <span class="text-almostblack dark:text-lightgray font-medium">Shots Made</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="goal_type" value="take" <?php echo $goal_type === 'take' ? 'checked' : ''; ?> class="w-4 h-4 accent-coral">
+                                    <span class="text-almostblack dark:text-lightgray font-medium">Shots Taken</span>
+                                </label>
+                            </div>
+                            <button type="submit" class="bg-coral hover:bg-coralhov text-white px-4 py-2 rounded-md text-sm font-semibold transition-colors w-fit">Update Goal Type</button>
+                        </form>
+                    </div>
+                    <div class="pt-2 flex items-center gap-2">
+                        <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path fill="#ff6f61" d="M64 256l0-96 160 0 0 96L64 256zm0 64l160 0 0 96L64 416l0-96zm224 96l0-96 160 0 0 96-160 0zM448 256l-160 0 0-96 160 0 0 96zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"/></svg>
+                        <a href="export.php" class="py-2 dark:text-lightgray font-semibold">Export All Data</a>
+                    </div>
             </div>
 
             

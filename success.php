@@ -1,5 +1,28 @@
+<?php
+function safeTarget(string $target): string
+{
+    $target = trim($target);
+    if ($target === '') {
+        return 'index.php';
+    }
+
+    if (preg_match('#^(?:[a-z][a-z0-9+.-]*:|//)#i', $target)) {
+        return 'index.php';
+    }
+
+    $path = parse_url($target, PHP_URL_PATH) ?: $target;
+    $path = ltrim($path, '/\\');
+    $path = basename($path);
+
+    return $path === '' ? 'index.php' : $path;
+}
+
+$redirectTarget = safeTarget($_GET['b'] ?? 'index.php');
+$redirectJs = json_encode($redirectTarget);
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,9 +36,11 @@
     <link rel="manifest" href="assets/site.webmanifest" />
 
     <script>
-        function next() {document.location.href = "<?php echo $_GET['b'] ?? 'index.php' ?>";}setTimeout(() => next(),  2000);
+        function next() { document.location.href = <?php echo $redirectJs; ?>; }
+        setTimeout(next, 2000);
     </script>
 </head>
+
 <body class="container mx-auto">
     <div class="flex flex-row gap-4 mt-6 justify-center items-center">
         <img src="assets/isoLogo.svg" class="size-24" alt="logo">
@@ -27,4 +52,5 @@
     </div>
 
 </body>
+
 </html>

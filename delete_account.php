@@ -9,24 +9,23 @@ if (!isset($_SESSION['loggedin'])) {
 require 'db/db_connect.php';
 $conn = $con;
 
+$user_id = $_SESSION['id']; 
+$user_type = $_POST['user_type']; 
+
+if (empty($user_type)) {
+    exit('User type is required.');
+}
 
 
-
-
-// Get user type and user ID
-$user_id = $_SESSION['id']; // Assuming you store user_id in the session when the user logs in
-$user_type = $_POST['user_type']; // 'coach', 'player', or 'user'
 
 if ($user_type == 'coach') {
-    // If coach, delete all players linked to coach and their stats
+    // delete all players linked to coach and their stats
 
     $coach_id = $_SESSION['coach_id'];
 
     $delete_coach = "DELETE FROM coaches WHERE coach_id = ?";
     $delete_players = "DELETE FROM players WHERE coach_id = ?";
     $delete_inv = "DELETE FROM invitations WHERE coach_id = ?";
-    
-    // Prepare and execute both statements
 
 
     $stmt = $conn->prepare($delete_coach);
@@ -39,7 +38,7 @@ if ($user_type == 'coach') {
 
     $delete_user = "DELETE FROM accounts WHERE id = ?";
     
-    // Prepare and execute the statement
+
     $stmt = $conn->prepare($delete_user);
     $stmt->bind_param('i', $user_id);
     $stmt->execute();
@@ -50,11 +49,11 @@ if ($user_type == 'coach') {
 
     $player_id = $_SESSION['player_id'];
 
-    // If player, delete player and their shooting data
+    // delete player and their shooting data
     $delete_player = "DELETE FROM players WHERE id = ?";
     $delete_shots = "DELETE FROM shots WHERE player_id = ?";
     
-    // Prepare and execute both statements
+    
     $stmt = $conn->prepare($delete_player);
     $stmt->bind_param('i', $player_id);
     $stmt->execute();
@@ -65,23 +64,25 @@ if ($user_type == 'coach') {
 
     $delete_user = "DELETE FROM accounts WHERE id = ?";
     
-    // Prepare and execute the statement
+    
     $stmt = $conn->prepare($delete_user);
     $stmt->bind_param('i', $user_id);
     $stmt->execute();
 
     echo "Player account and stats deleted successfully.";
     
-} else {
-    // If regular user, delete just the user account
+} elseif ($user_type == 'user') {
+
     $delete_user = "DELETE FROM accounts WHERE id = ?";
     
-    // Prepare and execute the statement
+    
     $stmt = $conn->prepare($delete_user);
     $stmt->bind_param('i', $user_id);
     $stmt->execute();
 
     echo "User account deleted successfully.";
+} else {
+    header("Location: error.php?a=Invalid user type.&b=index.php");
 }
 
 // Logout the user and redirect to the homepage

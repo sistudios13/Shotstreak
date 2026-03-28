@@ -1,139 +1,146 @@
 <?php
-
 require 'db/db_connect.php';
 
+function respondError(string $message, string $fallback = 'index.php')
+{
+    $location = 'error.php?a=' . rawurlencode($message) . '&b=' . rawurlencode($fallback);
+    if (!empty($_SERVER['HTTP_HX_REQUEST'])) {
+        header('HX-Redirect: ' . $location);
+    } else {
+        header('Location: ' . $location);
+    }
+    exit();
+}
 
+function redirectSuccess(string $location)
+{
+    if (!empty($_SERVER['HTTP_HX_REQUEST'])) {
+        header('HX-Redirect: ' . $location);
+    } else {
+        header('Location: ' . $location);
+    }
+    exit();
+}
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: index.php');
+    exit();
+}
+
+$username = trim($_POST['username'] ?? '');
+$email = trim($_POST['email'] ?? '');
+$password_input = $_POST['password'] ?? '';
+$coach_id = isset($_POST['coach_id']) ? (int) $_POST['coach_id'] : 0;
+$token = trim($_POST['invite_token'] ?? '');
+
+if ($username === '' || $password_input === '' || $email === '' || $coach_id <= 0 || $token === '') {
+    respondError('Please complete the registration form', 'index.php');
+}
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    respondError('Invalid email format', 'index.php');
+}
+
+if (!preg_match('/^[a-zA-Z0-9 ]+$/', $username)) {
+    respondError('Invalid registration', 'index.php');
+}
+
+if (strlen($password_input) > 20 || strlen($password_input) < 5) {
+    respondError('Password must be between 5 and 20 characters long', 'index.php');
+}
+
+if (strlen($username) > 50 || strlen($username) < 2) {
+    respondError('Name must be between 2 and 50 characters long', 'index.php');
+}
+
+if (strlen($email) > 200) {
+    respondError('Email must be less than 200 characters long', 'index.php');
+}
 
 try {
     $pdo = new PDO("mysql:host=$DATABASE_HOST;dbname=$DATABASE_NAME", $DATABASE_USER, $DATABASE_PASS);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    die("Could not connect to the database: " . $e->getMessage());
+    error_log('Player registration DB connection failed: ' . $e->getMessage());
+    respondError('Database error', 'index.php');
 }
 
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-$username = $_POST['username'];
-$email = $_POST['email'];
-$password = $_POST['password'];
-$coach_id = $_POST['coach_id'];
-$token = $_POST['invite_token'];
-
-// Validate input
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-die("Invalid email format."); //ADD ERROR PAGE
-}
-
-if (!isset($_POST['username'], $_POST['password'], $_POST['email'])) {
-	// Could not get the data that should have been sent.
-	exit('Please complete the registration form!');
-}
-// Make sure the submitted registration values are not empty.
-if (empty($_POST['username']) || empty($_POST['password']) || empty($_POST['email'])) {
-	// One or more values are empty.
-	exit('Please complete the registration form');
-}
-
-if (strlen($_POST['password']) > 20 || strlen($_POST['password']) < 5) {
-	exit('Password must be between 5 and 20 characters long!');
-}
-
-if (strlen($_POST['username']) > 50 || strlen($_POST['username']) < 2) {
-	exit('Name must be between 2 and 50 characters long!');
-}
-
-if (strlen($_POST['email']) > 200) {
-	exit('Email must be less than 200 characters long!');
-}
-
-$cn = $con->prepare("SELECT * FROM invitations WHERE token = ?");
-$cn->bind_param('s', $token);
-$cn->execute();
-$cr = $cn->get_result();
-$ca = $cr->fetch_assoc();
-
-if ($ca['coach_id'] != $coach_id) {
-    echo "<script>setTimeout(() => window.location.href = 'error.php?a=Invalid Registration&b=index.php', 700);</script>";
-    exit();
-}
-
-if ($ca['player_name'] != $username) {
-    echo "<script>setTimeout(() => window.location.href = 'error.php?a=Invalid Registration&b=index.php', 700);</script>";
-    exit();
-}
-
-if ($ca['player_email'] != $email) {
-    echo "<script>setTimeout(() => window.location.href = 'error.php?a=Invalid Registration&b=index.php', 700);</script>";
-}
-
-
-// Hash the password
-$hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-if ($stmt = $con->prepare('SELECT id, password FROM accounts WHERE email = ?')) {
-	// Bind parameters (s = string, i = int, b = blob, etc), hash the password using the PHP password_hash function.
-	$stmt->bind_param('s',  $_POST['email']);
-	$stmt->execute();
-	$stmt->store_result();
-	// Store the result so we can check if the account exists in the database.
-	if ($stmt->num_rows > 0) {
-		// Username already exists
-		echo "<script>setTimeout(() => window.location.href = 'error.php?a=User already exists&b=index.php', 700);</script>";
-        exit();
-	} else {
-
-// Prepare SQL and bind parameters
-$stmt = $pdo->prepare("INSERT INTO players (player_name, email, password, coach_id) VALUES (:player_name, :email,
-:password, :coach_id)");
-$stmt->bindParam(':player_name', $username);
-$stmt->bindParam(':email', $email);
-$stmt->bindParam(':password', $hashed_password);
-$stmt->bindParam(':coach_id', $coach_id);
-
-// Execute the statement
-try {
-$stmt->execute();
-
-
-
-
-// add the player information to the accounts tables
-if ($stmt = $con->prepare('INSERT INTO accounts (username, password, email, user_type) VALUES (?, ?, ?, "player")')) {
-    // We do not want to expose passwords in our database, so hash the password and use password_verify when a user logs in.
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); 
-    $stmt->bind_param('sss', $username, $password, $email);
+if ($stmt = $con->prepare('SELECT coach_id, player_name, player_email FROM invitations WHERE token = ?')) {
+    $stmt->bind_param('s', $token);
     $stmt->execute();
-    
+    $result = $stmt->get_result();
+    $invitation = $result->fetch_assoc();
+    $stmt->close();
+
+    if (!$invitation || (int) $invitation['coach_id'] !== $coach_id || $invitation['player_name'] !== $username || $invitation['player_email'] !== $email) {
+        respondError('Invalid registration', 'index.php');
+    }
+} else {
+    error_log('Invitation lookup failed: ' . $con->error);
+    respondError('Database error', 'index.php');
+}
+
+if ($stmt = $con->prepare('SELECT id FROM accounts WHERE email = ?')) {
+    $stmt->bind_param('s', $email);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows > 0) {
+        respondError('User already exists', 'index.php');
+    }
+
+    $stmt->close();
+} else {
+    error_log('Account lookup failed: ' . $con->error);
+    respondError('Database error', 'index.php');
+}
+
+$hashed_password = password_hash($password_input, PASSWORD_DEFAULT);
+
+try {
+    $playerInsert = $pdo->prepare('INSERT INTO players (player_name, email, password, coach_id) VALUES (:player_name, :email, :password, :coach_id)');
+    $playerInsert->execute([
+        ':player_name' => $username,
+        ':email' => $email,
+        ':password' => $hashed_password,
+        ':coach_id' => $coach_id,
+    ]);
+} catch (PDOException $e) {
+    if ($e->getCode() == 23000) {
+        respondError('User already exists', 'index.php');
+    }
+    error_log('Player insert failed: ' . $e->getMessage());
+    respondError('Database error', 'index.php');
+}
+
+if ($stmt = $con->prepare('INSERT INTO accounts (username, password, email, user_type) VALUES (?, ?, ?, "player")')) {
+    $stmt->bind_param('sss', $username, $hashed_password, $email);
+    if (!$stmt->execute()) {
+        error_log('Accounts insert failed: ' . $stmt->error);
+        respondError('Database error', 'index.php');
+    }
+    $stmt->close();
+} else {
+    error_log('Accounts insert prepare failed: ' . $con->error);
+    respondError('Database error', 'index.php');
 }
 
 if ($stmt = $con->prepare('UPDATE invitations SET status = "accepted" WHERE token = ?')) {
     $stmt->bind_param('s', $token);
-    $stmt->execute();
-    echo "<script>setTimeout(() => window.location.href = 'success.php?b=login.php', 700);</script>";
-
+    if (!$stmt->execute()) {
+        error_log('Invitation update failed: ' . $stmt->error);
+        respondError('Database error', 'index.php');
+    }
+    $stmt->close();
+} else {
+    error_log('Invitation update prepare failed: ' . $con->error);
+    respondError('Database error', 'index.php');
 }
 
+$con->close();
+redirectSuccess('success.php?b=login.php');
+exit();
 
 
-else {
-    // Something is wrong with the SQL statement, so you must check to make sure your accounts table exists with all three fields.
-    echo 'Could not prepare statement!'; // ERROR PAGE
-}
-} 
-
-catch (PDOException $e) {
-    if ($e->getCode() == 23000) { // Duplicate entry
-        echo "<script>setTimeout(() => window.location.href = 'error.php?a=User already exists&b=index.php', 700);</script>";
-        exit(); //ERROR PAGE
-    } else {
-    die("An error occurred: " . $e->getMessage());
-    }
-    }
-    }
-//
-}
-
-
-} 
 
 

@@ -54,10 +54,6 @@ $fa = $result_today_goal->fetch_assoc();
 $today_goal = $fa['goal'] ?? 0;
 $goal_type = $fa['goal_type'];
 
-if ($goal_type === null) {
-    header('Location: error.php?a=Your coach has deleted the team&b=delete_account.php');
-}
-
 // Fetch today's shots made
 $sql_today_shots = "SELECT SUM(shots_made) AS total_shots_made FROM shots WHERE player_id = ? AND shot_date = ?";
 $stmt = $conn->prepare($sql_today_shots);
@@ -194,7 +190,7 @@ if ($stats_data['total_taken'] == 0) {
 //Streak
 
 // Fetch the user's daily shot records and goal data from the database
-$query = "SELECT shots_taken, shot_date, goal, goal_type FROM shots WHERE player_id = ? ORDER BY shot_date DESC";
+$query = "SELECT shots_taken, shots_made, shot_date, goal, goal_type FROM shots WHERE player_id = ? ORDER BY shot_date DESC";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
@@ -206,13 +202,17 @@ $previous_day = null;
 // Check each record to calculate the streak
 while ($row = $result->fetch_assoc()) {
     $shots_taken = $row['shots_taken'];
+    $shots_made = $row['shots_made'];
     $shot_date = $row['shot_date'];
     $goal = $row['goal'];
     $goal_type = $row['goal_type'];
 
+    $taken_goal_met = ($goal_type === 'take' && $shots_taken >= $goal);
+    $made_goal_met = ($goal_type === 'make' && $shots_made >= $goal);
+
     // If the user met their goal on that day
 
-    if ($shots_taken >= $goal) {
+    if ($taken_goal_met || $made_goal_met) {
         // If this is the first day we're checking
         if ($previous_day === null) {
             $streak++;  // Start the streak
