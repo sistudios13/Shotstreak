@@ -79,7 +79,7 @@ if ($result['verified'] == 1) {
         </nav>
     </header>
         <!-- Registration Form Container -->
-        <div class="flex items-center justify-center min-h-screen">
+        <div class="flex items-center justify-center  px-6 min-h-screen">
             <div class="bg-white dark:bg-darkslate p-8 rounded-lg shadow-lg max-w-md w-full">
                 <!-- Logo -->
                 <div class="text-center mb-6">

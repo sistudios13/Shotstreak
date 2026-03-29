@@ -2,7 +2,11 @@
 require 'db/db_connect.php';
 $conn = $con;
 
-session_start();
+
+if (!isset($_GET['token'])) {
+    header("Location: error.php?a=An error occurred!&b=login.php");
+    exit();
+}
 
 if (!isset($_SESSION['loggedin'])) {
 	header('Location: index.php');
@@ -13,6 +17,7 @@ if ($_SESSION['type'] != 'user') {
 	header('Location: index.php');
 	exit;
 }
+
 
 if (isset($_GET['token'])) {
     
@@ -37,3 +42,4 @@ if (isset($_GET['token'])) {
         header("Location: error.php?a=Invalid Token, try verifying again!&b=login.php");
     }
 }
+

@@ -18,3 +18,4 @@ bin-release/
 *.sql
 
 *.log
+log/error.log

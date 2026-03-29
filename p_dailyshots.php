@@ -65,7 +65,7 @@ if ($_SESSION['type'] != 'player') {
         </nav>
     </header>
         <!-- Registration Form Container -->
-        <div class="flex flex-col-reverse items-center gap-12 justify-center min-h-screen">
+        <div class="flex flex-col-reverse items-center gap-4 px-6 justify-center min-h-screen">
             <div class="bg-white dark:bg-darkslate p-8 mt-6 rounded-lg shadow-lg max-w-md w-full">
                 <!-- Logo -->
                 <div class="text-center mb-6">
