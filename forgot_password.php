@@ -97,7 +97,7 @@ if (isset($_POST['email'])) {
         <div class='email-container'>
             <div class='email-header'>
                 <h1>Reset Your Shotstreak Password</h1>
-                <img title='logo' src='https://shotstreak.simonsites.com/assets/isoLogo.svg' alt='Logo' height='200' width='200'>
+                <img title='logo' src='https://shotstreak.ca/assets/isoLogo.svg' alt='Logo' height='200' width='200'>
             </div>
             
             <div class='email-body'>

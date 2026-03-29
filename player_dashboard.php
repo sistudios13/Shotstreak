@@ -224,10 +224,10 @@ while ($row = $result->fetch_assoc()) {
     $shots_made = $row['shots_made'];
     $shot_date = $row['shot_date'];
     $goal = $row['goal'];
-    $goal_type = $row['goal_type'];
+    $goal_type_here = $row['goal_type'];
 
-    $taken_goal_met = ($goal_type === 'take' && $shots_taken >= $goal);
-    $made_goal_met = ($goal_type === 'make' && $shots_made >= $goal);
+    $taken_goal_met = ($goal_type_here === 'take' && $shots_taken >= $goal);
+    $made_goal_met = ($goal_type_here === 'make' && $shots_made >= $goal);
 
     // If the user met their goal on that day
 
